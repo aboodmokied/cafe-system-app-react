@@ -33,15 +33,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
         
         {/* Sidebar - only visible on desktop or when toggled on mobile */}
-        <div className={`${isMobile ? 'fixed z-40 inset-0' : ''} ${isMobile && !showSidebar ? 'hidden' : ''}`}>
+        <div className={`${isMobile ? 'fixed inset-0' : ''} ${isMobile && !showSidebar ? 'hidden' : ''}`}>
           {isMobile && showSidebar && (
             <div 
-              className="fixed inset-0 bg-black bg-opacity-50" 
+              className="fixed inset-0 bg-black bg-opacity-50 z-40" 
               onClick={() => setShowSidebar(false)}
               aria-label="إغلاق القائمة الجانبية"
             />
           )}
-          <Sidebar onClose={() => setShowSidebar(false)} />
+          <div className={`${isMobile ? 'z-50 relative' : ''}`}>
+            <Sidebar onClose={() => setShowSidebar(false)} />
+          </div>
         </div>
         
         {/* Main content */}
