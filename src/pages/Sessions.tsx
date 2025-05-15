@@ -1,229 +1,167 @@
-
-import React from "react";
-import Layout from "../components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+// pages/sessions.tsx
+import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle } from "lucide-react";
+import { useState } from "react";
+import SessionCard from "@/components/sessions/SessionCard";
+import NewSessionDialog from "@/components/sessions/NewSessionDialog";
+import OrdersDialog from "@/components/sessions/OrdersDialog";
 
-const Sessions = () => {
-  // Sample sessions data
-  const sessions = [
+interface Order {
+  type: string;
+  price: number;
+}
+
+export interface Session {
+  id: string;
+  client: string;
+  startTime: string;
+  endTime: string | null;
+  status: "open" | "closed";
+  orders: Order[];
+}
+
+const SessionsPage = () => {
+  const [sessions, setSessions] = useState<Session[]>([
     {
       id: "S001",
-      client: "Ahmed Mohammed (Subscriber)",
+      client: "أحمد محمد (مشترك)",
       startTime: "2025-05-15T10:00:00",
       endTime: null,
       status: "open",
-      orders: 3,
-      totalDue: 45
-    },
-    {
-      id: "S002",
-      client: "Fatima Ali (Subscriber)",
-      startTime: "2025-05-15T11:30:00",
-      endTime: null,
-      status: "open",
-      orders: 1,
-      totalDue: 15
+      orders: [
+        { type: "طلب 1", price: 15 },
+        { type: "طلب 2", price: 15 },
+        { type: "طلب 3", price: 15 }
+      ]
     },
     {
       id: "S003",
-      client: "Guest User",
+      client: "مستخدم زائر",
       startTime: "2025-05-15T09:15:00",
       endTime: "2025-05-15T12:30:00",
       status: "closed",
-      orders: 4,
-      totalDue: 60
-    },
-    {
-      id: "S004",
-      client: "Omar Abdullah (Subscriber)",
-      startTime: "2025-05-14T16:00:00",
-      endTime: "2025-05-14T19:45:00",
-      status: "closed",
-      orders: 5,
-      totalDue: 78
+      orders: [
+        { type: "طلب 1", price: 15 },
+        { type: "طلب 2", price: 15 },
+        { type: "طلب 3", price: 15 },
+        { type: "طلب 4", price: 15 }
+      ]
     }
-  ];
+  ]);
 
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const [ordersDialogOpen, setOrdersDialogOpen] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+
+  const openOrders = (sessionId: string) => {
+    setSelectedSessionId(sessionId);
+    setOrdersDialogOpen(true);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+  const addSession = (newSession: Session) => {
+    setSessions([newSession, ...sessions]);
   };
 
-  const openSessions = sessions.filter(session => session.status === "open");
-  const closedSessions = sessions.filter(session => session.status === "closed");
+  const closeSession = (sessionId: string) => {
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.id === sessionId
+          ? { ...s, status: "closed", endTime: new Date().toISOString() }
+          : s
+      )
+    );
+  };
+
+  const updateSessionOrders = (sessionId: string, newOrders: Order[]) => {
+    setSessions((prev) =>
+      prev.map((s) => (s.id === sessionId ? { ...s, orders: newOrders } : s))
+    );
+  };
+
+  const openSessions = sessions.filter((s) => s.status === "open");
+  const closedSessions = sessions.filter((s) => s.status === "closed");
+
+  const selectedSession = sessions.find((s) => s.id === selectedSessionId);
+
+  // حساب إجمالي المبلغ في بطاقة الجلسة
+  const totalDue = (orders: Order[]) =>
+    orders.reduce((acc, o) => acc + o.price, 0);
 
   return (
     <Layout>
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h1 className="text-2xl font-bold">Sessions</h1>
-          <Button className="gap-2">
-            <PlusCircle size={16} />
-            New Session
-          </Button>
+          <h1 className="text-2xl font-bold">الجلسات</h1>
+          <NewSessionDialog onAddSession={addSession} />
         </div>
 
         <Tabs defaultValue="open" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="open">
-              Open Sessions ({openSessions.length})
-            </TabsTrigger>
-            <TabsTrigger value="closed">
-              Closed Sessions ({closedSessions.length})
-            </TabsTrigger>
-            <TabsTrigger value="all">All Sessions</TabsTrigger>
+            <TabsTrigger value="open">مفتوحة ({openSessions.length})</TabsTrigger>
+            <TabsTrigger value="closed">مغلقة ({closedSessions.length})</TabsTrigger>
+            <TabsTrigger value="all">الكل</TabsTrigger>
           </TabsList>
 
           <TabsContent value="open" className="space-y-4">
-            {openSessions.map(session => (
-              <Card key={session.id} className="p-4">
-                <div className="flex flex-col md:flex-row justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-medium">{session.id}</h3>
-                      <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
-                        Open
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">{session.client}</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">Start Time</p>
-                      <p className="font-medium">
-                        {formatDate(session.startTime)} at {formatTime(session.startTime)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Orders</p>
-                      <p className="font-medium">{session.orders} items</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Amount Due</p>
-                      <p className="font-medium">${session.totalDue}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">View Orders</Button>
-                    <Button variant="default" size="sm">Close Session</Button>
-                  </div>
-                </div>
-              </Card>
+            {openSessions.map((session) => (
+              <SessionCard
+                key={session.id}
+                session={{
+                  ...session,
+                  orders: session.orders.length,
+                  totalDue: totalDue(session.orders)
+                }}
+                onViewOrders={() => openOrders(session.id)}
+                onCloseSession={() => closeSession(session.id)}
+              />
             ))}
-            {openSessions.length === 0 && (
-              <p className="text-center text-gray-500 py-8">No open sessions found</p>
-            )}
           </TabsContent>
 
           <TabsContent value="closed" className="space-y-4">
-            {closedSessions.map(session => (
-              <Card key={session.id} className="p-4">
-                <div className="flex flex-col md:flex-row justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-medium">{session.id}</h3>
-                      <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        Closed
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">{session.client}</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">Start Time</p>
-                      <p className="font-medium">{formatTime(session.startTime)}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">End Time</p>
-                      <p className="font-medium">{session.endTime && formatTime(session.endTime)}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Orders</p>
-                      <p className="font-medium">{session.orders} items</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Total</p>
-                      <p className="font-medium">${session.totalDue}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center">
-                    <Button variant="outline" size="sm">View Details</Button>
-                  </div>
-                </div>
-              </Card>
+            {closedSessions.map((session) => (
+              <SessionCard
+                key={session.id}
+                session={{
+                  ...session,
+                  orders: session.orders.length,
+                  totalDue: totalDue(session.orders)
+                }}
+                onViewOrders={() => openOrders(session.id)}
+              />
             ))}
-            {closedSessions.length === 0 && (
-              <p className="text-center text-gray-500 py-8">No closed sessions found</p>
-            )}
           </TabsContent>
 
           <TabsContent value="all" className="space-y-4">
-            {sessions.map(session => (
-              <Card key={session.id} className="p-4">
-                <div className="flex flex-col md:flex-row justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-medium">{session.id}</h3>
-                      <span className={`${
-                        session.status === 'open' 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-gray-100 text-gray-700'
-                      } text-xs px-2 py-1 rounded-full`}>
-                        {session.status === 'open' ? 'Open' : 'Closed'}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">{session.client}</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">Date</p>
-                      <p className="font-medium">{formatDate(session.startTime)}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Time</p>
-                      <p className="font-medium">
-                        {formatTime(session.startTime)}
-                        {session.endTime ? ` - ${formatTime(session.endTime)}` : ''}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Orders</p>
-                      <p className="font-medium">{session.orders} items</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Amount</p>
-                      <p className="font-medium">${session.totalDue}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">View Details</Button>
-                    {session.status === 'open' && (
-                      <Button variant="default" size="sm">Close Session</Button>
-                    )}
-                  </div>
-                </div>
-              </Card>
+            {sessions.map((session) => (
+              <SessionCard
+                key={session.id}
+                session={{
+                  ...session,
+                  orders: session.orders.length,
+                  totalDue: totalDue(session.orders)
+                }}
+                onViewOrders={() => openOrders(session.id)}
+                onCloseSession={() =>
+                  session.status === "open" && closeSession(session.id)
+                }
+              />
             ))}
           </TabsContent>
         </Tabs>
       </div>
+
+      {selectedSession && (
+        <OrdersDialog
+          open={ordersDialogOpen}
+          session={selectedSession}
+          onClose={() => setOrdersDialogOpen(false)}
+          orders={selectedSession.orders}
+          onUpdateSessionOrders={(newOrders) =>
+            updateSessionOrders(selectedSession.id, newOrders)
+          }
+        />
+      )}
     </Layout>
   );
 };
 
-export default Sessions;
+export default SessionsPage;

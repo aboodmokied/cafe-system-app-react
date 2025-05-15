@@ -41,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               aria-label="إغلاق القائمة الجانبية"
             />
           )}
-          <div className={`${isMobile ? 'z-50 relative' : ''}`}>
+          <div className={`${isMobile ? 'z-50 relative' : ''} h-full`}>
             <Sidebar onClose={() => setShowSidebar(false)} />
           </div>
         </div>
