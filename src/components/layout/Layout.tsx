@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {isMobile && (
           <button 
             onClick={toggleSidebar}
-            className="fixed z-30 bottom-4 right-4 bg-purple-600 text-white p-3 rounded-full shadow-lg"
+            className="fixed z-50 bottom-4 right-4 bg-purple-600 text-white p-3 rounded-full shadow-lg"
             aria-label="فتح القائمة الجانبية"
           >
             <Menu size={24} />
@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
         
         {/* Sidebar - only visible on desktop or when toggled on mobile */}
-        <div className={`${isMobile ? 'fixed z-20 inset-0' : ''} ${isMobile && !showSidebar ? 'hidden' : ''}`}>
+        <div className={`${isMobile ? 'fixed z-40 inset-0' : ''} ${isMobile && !showSidebar ? 'hidden' : ''}`}>
           {isMobile && showSidebar && (
             <div 
               className="fixed inset-0 bg-black bg-opacity-50" 
