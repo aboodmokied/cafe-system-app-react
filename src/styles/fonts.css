@@ -2,4 +2,6 @@
 /* Apply Tajawal font to the whole application */
 body {
   font-family: 'Tajawal', sans-serif;
+  direction: rtl;
 }
+

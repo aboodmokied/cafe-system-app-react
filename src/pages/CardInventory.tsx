@@ -9,29 +9,29 @@ const CardInventory = () => {
   // Sample card inventory data
   const cardCategories = [
     { 
-      type: "Internet Cards", 
+      type: "بطاقات الإنترنت", 
       total: 120, 
       variants: [
-        { name: "2-Hour Card", quantity: 45, price: 5 },
-        { name: "4-Hour Card", quantity: 35, price: 8 },
-        { name: "8-Hour Card", quantity: 40, price: 15 }
+        { name: "بطاقة ٢ ساعة", quantity: 45, price: 5 },
+        { name: "بطاقة ٤ ساعات", quantity: 35, price: 8 },
+        { name: "بطاقة ٨ ساعات", quantity: 40, price: 15 }
       ]
     },
     { 
-      type: "Prepaid Cards", 
+      type: "بطاقات مسبقة الدفع", 
       total: 85, 
       variants: [
-        { name: "Weekend Pass", quantity: 30, price: 20 },
-        { name: "Daily Pass", quantity: 25, price: 12 },
-        { name: "VIP Access", quantity: 30, price: 25 }
+        { name: "تصريح نهاية الأسبوع", quantity: 30, price: 20 },
+        { name: "تصريح يومي", quantity: 25, price: 12 },
+        { name: "دخول VIP", quantity: 30, price: 25 }
       ]
     },
     { 
-      type: "Subscription Cards", 
+      type: "بطاقات الاشتراك", 
       total: 30, 
       variants: [
-        { name: "Monthly Card", quantity: 15, price: 50 },
-        { name: "Weekly Card", quantity: 15, price: 15 }
+        { name: "بطاقة شهرية", quantity: 15, price: 50 },
+        { name: "بطاقة أسبوعية", quantity: 15, price: 15 }
       ]
     }
   ];
@@ -40,29 +40,29 @@ const CardInventory = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Card Inventory</h1>
           <Button className="gap-2">
             <PlusCircle size={16} />
-            Add New Card
+            إضافة بطاقة جديدة
           </Button>
+          <h1 className="text-2xl font-bold">بطاقات المخزون</h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cardCategories.map((category, idx) => (
             <Card key={idx} className="p-6">
               <h3 className="text-lg font-medium mb-2">{category.type}</h3>
-              <p className="text-sm text-gray-500 mb-4">Total: {category.total} cards</p>
+              <p className="text-sm text-gray-500 mb-4">الإجمالي: {category.total} بطاقة</p>
               
               <div className="space-y-3">
                 {category.variants.map((variant, index) => (
                   <div key={index} className="flex justify-between items-center border-b border-gray-100 pb-2">
-                    <div>
-                      <p className="font-medium">{variant.name}</p>
-                      <p className="text-sm text-gray-500">${variant.price}</p>
-                    </div>
                     <div className="text-right">
                       <p className="font-medium">{variant.quantity}</p>
-                      <p className="text-sm text-gray-500">in stock</p>
+                      <p className="text-sm text-gray-500">متوفر</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">{variant.name}</p>
+                      <p className="text-sm text-gray-500">{variant.price} ر.س</p>
                     </div>
                   </div>
                 ))}

@@ -12,22 +12,22 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { title: "Dashboard", icon: <Home size={20} />, path: "/" },
-  { title: "Card Inventory", icon: <CreditCard size={20} />, path: "/card-inventory" },
-  { title: "Subscriptions", icon: <Users size={20} />, path: "/subscriptions" },
-  { title: "Sessions", icon: <Clock size={20} />, path: "/sessions" },
-  { title: "Point of Sale", icon: <ShoppingCart size={20} />, path: "/pos" },
-  { title: "Reports", icon: <BarChart size={20} />, path: "/reports" },
-  { title: "Settings", icon: <Settings size={20} />, path: "/settings" },
+  { title: "الرئيسية", icon: <Home size={20} />, path: "/" },
+  { title: "بطاقات المخزون", icon: <CreditCard size={20} />, path: "/card-inventory" },
+  { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscriptions" },
+  { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
+  { title: "نقطة البيع", icon: <ShoppingCart size={20} />, path: "/pos" },
+  { title: "التقارير", icon: <BarChart size={20} />, path: "/reports" },
+  { title: "الإعدادات", icon: <Settings size={20} />, path: "/settings" },
 ];
 
 const Sidebar = () => {
   const location = useLocation();
   
   return (
-    <aside className="w-full md:w-64 bg-white border-r border-gray-200 md:min-h-screen">
+    <aside className="w-full md:w-64 bg-white border-l border-gray-200 md:min-h-screen">
       <div className="p-4">
-        <h1 className="text-xl font-bold text-center py-4">Café Management</h1>
+        <h1 className="text-xl font-bold text-center py-4">إدارة المقهى</h1>
       </div>
       <nav className="px-2">
         <ul className="space-y-1">
