@@ -1,20 +1,54 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Menu } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const isMobile = useIsMobile();
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
-      <div className="flex-1 flex flex-col">
-        <Header />
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <Header />
+      <div className="flex flex-1">
+        {/* Mobile sidebar toggle button */}
+        {isMobile && (
+          <button 
+            onClick={toggleSidebar}
+            className="fixed z-30 bottom-4 right-4 bg-purple-600 text-white p-3 rounded-full shadow-lg"
+            aria-label="فتح القائمة الجانبية"
+          >
+            <Menu size={24} />
+          </button>
+        )}
+        
+        {/* Sidebar - only visible on desktop or when toggled on mobile */}
+        <div className={`${isMobile ? 'fixed z-20 inset-0' : ''} ${isMobile && !showSidebar ? 'hidden' : ''}`}>
+          {isMobile && showSidebar && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50" 
+              onClick={() => setShowSidebar(false)}
+              aria-label="إغلاق القائمة الجانبية"
+            />
+          )}
+          <Sidebar onClose={() => setShowSidebar(false)} />
+        </div>
+        
+        {/* Main content */}
+        <main className="flex-1 p-4 md:p-6">
+          {children}
+        </main>
       </div>
-      <Sidebar />
     </div>
   );
 };
