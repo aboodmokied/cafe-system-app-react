@@ -18,3 +18,8 @@ export interface User{
     email:string;
     roles?:[]
 }
+
+export interface LoginResponse {
+  token: string;
+  user: User;
+}
