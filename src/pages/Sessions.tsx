@@ -11,41 +11,51 @@ interface Order {
   price: number;
 }
 
+enum ClientType{
+  GUEST="GUEST",
+  SUBSCRIPER="SUBSCRIPER"
+}
+
 export interface Session {
   id: string;
-  client: string;
-  startTime: string;
-  endTime: string | null;
-  status: "open" | "closed";
-  orders: Order[];
+  username: string;
+  clientType:"GUEST"|"SUBSCRIPER";
+  startAt: string;
+  endAt: string | null;
+  isActive:boolean;
+
+  // status: "open" | "closed";
+  // orders: Order[];
 }
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([
     {
       id: "S001",
-      client: "أحمد محمد (مشترك)",
-      startTime: "2025-05-15T10:00:00",
-      endTime: null,
-      status: "open",
-      orders: [
-        { type: "طلب 1", price: 15 },
-        { type: "طلب 2", price: 15 },
-        { type: "طلب 3", price: 15 }
-      ]
+      username: "أحمد محمد",
+      startAt: "2025-05-15T10:00:00",
+      endAt: null,
+      isActive:true,
+      clientType:'SUBSCRIPER'
+      // orders: [
+      //   { type: "طلب 1", price: 15 },
+      //   { type: "طلب 2", price: 15 },
+      //   { type: "طلب 3", price: 15 }
+      // ]
     },
     {
       id: "S003",
-      client: "مستخدم زائر",
-      startTime: "2025-05-15T09:15:00",
-      endTime: "2025-05-15T12:30:00",
-      status: "closed",
-      orders: [
-        { type: "طلب 1", price: 15 },
-        { type: "طلب 2", price: 15 },
-        { type: "طلب 3", price: 15 },
-        { type: "طلب 4", price: 15 }
-      ]
+      username: "مستخدم زائر",
+      startAt: "2025-05-15T09:15:00",
+      endAt: "2025-05-15T12:30:00",
+      isActive:false,
+      clientType:'GUEST'
+      // orders: [
+      //   { type: "طلب 1", price: 15 },
+      //   { type: "طلب 2", price: 15 },
+      //   { type: "طلب 3", price: 15 },
+      //   { type: "طلب 4", price: 15 }
+      // ]
     }
   ]);
 
@@ -77,8 +87,8 @@ const SessionsPage = () => {
     );
   };
 
-  const openSessions = sessions.filter((s) => s.status === "open");
-  const closedSessions = sessions.filter((s) => s.status === "closed");
+  const openSessions = sessions.filter((s) => s.isActive);
+  const closedSessions = sessions.filter((s) => !s.isActive);
 
   const selectedSession = sessions.find((s) => s.id === selectedSessionId);
 
@@ -107,8 +117,8 @@ const SessionsPage = () => {
                 key={session.id}
                 session={{
                   ...session,
-                  orders: session.orders.length,
-                  totalDue: totalDue(session.orders)
+                  // orders: session.orders.length,
+                  // totalDue: totalDue(session.orders)
                 }}
                 onViewOrders={() => openOrders(session.id)}
                 onCloseSession={() => closeSession(session.id)}
@@ -122,8 +132,8 @@ const SessionsPage = () => {
                 key={session.id}
                 session={{
                   ...session,
-                  orders: session.orders.length,
-                  totalDue: totalDue(session.orders)
+                  // orders: session.orders.length,
+                  // totalDue: totalDue(session.orders)
                 }}
                 onViewOrders={() => openOrders(session.id)}
               />
@@ -136,12 +146,12 @@ const SessionsPage = () => {
                 key={session.id}
                 session={{
                   ...session,
-                  orders: session.orders.length,
-                  totalDue: totalDue(session.orders)
+                  // orders: session.orders.length,
+                  // totalDue: totalDue(session.orders)
                 }}
                 onViewOrders={() => openOrders(session.id)}
                 onCloseSession={() =>
-                  session.status === "open" && closeSession(session.id)
+                  session.isActive && closeSession(session.id)
                 }
               />
             ))}
@@ -149,7 +159,7 @@ const SessionsPage = () => {
         </Tabs>
       </div>
 
-      {selectedSession && (
+      {/* {selectedSession && (
         <OrdersDialog
           open={ordersDialogOpen}
           session={selectedSession}
@@ -159,7 +169,7 @@ const SessionsPage = () => {
             updateSessionOrders(selectedSession.id, newOrders)
           }
         />
-      )}
+      )} */}
     </Layout>
   );
 };

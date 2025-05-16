@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
+import authAxios from "@/api/authAxios";
 
 interface Props {
   onAddSession: (session: any) => void;
@@ -19,9 +20,9 @@ const NewSessionDialog: React.FC<Props> = ({ onAddSession }) => {
   const [clientName, setClientName] = useState("");
   const [clientType, setClientType] = useState("مشترك"); // القيمة الافتراضية
 
-  const handleAdd = () => {
+  const handleAdd = async() => {
+    
     if (!clientName) return;
-
     const client = `${clientName} (${clientType})`;
 
     onAddSession({
@@ -32,6 +33,10 @@ const NewSessionDialog: React.FC<Props> = ({ onAddSession }) => {
       status: "open",
       orders: [],
       totalDue: 0,
+    });
+    authAxios.post('/session',{
+      username:'abood mokk',
+      clientType:'GUEST'
     });
     setClientName("");
     setClientType("مشترك");

@@ -1,9 +1,11 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
+import { setSessionExpiredHandler } from "@/api/authAxios";
+import SessionExpiredDialog from "../auth/SessionExpiredDialog";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,6 +14,19 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
   const [showSidebar, setShowSidebar] = useState(false);
+
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      setSessionExpired(true);
+    });
+  }, []);
+
+  const handleDialogClose = () => {
+    setSessionExpired(false);
+    window.location.href = "/login";
+  };
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -51,6 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </main>
       </div>
+      <SessionExpiredDialog open={sessionExpired} onClose={handleDialogClose} />
     </div>
   );
 };

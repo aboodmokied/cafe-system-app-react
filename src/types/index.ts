@@ -1,10 +1,13 @@
 export interface Session {
   id: string;
-  client: string;
-  startTime: string;
-  endTime: string | null;
-  status: "open" | "closed";
-  orders: Order[];
+  username: string;
+  clientType:"GUEST"|"SUBSCRIPER";
+  startAt: string;
+  endAt: string | null;
+  isActive:boolean;
+
+  // status: "open" | "closed";
+  // orders: Order[];
 }
 
 export interface Order {
