@@ -9,35 +9,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
-import authAxios from "@/api/authAxios";
+import { Session } from "@/types";
 
 interface Props {
-  onAddSession: (session: any) => void;
+  onAddSession: (newSession:Pick<Session,"username"|"clientType">) => void;
 }
 
 const NewSessionDialog: React.FC<Props> = ({ onAddSession }) => {
   const [open, setOpen] = useState(false);
   const [clientName, setClientName] = useState("");
-  const [clientType, setClientType] = useState("مشترك"); // القيمة الافتراضية
+  const [clientType, setClientType] = useState("SUBSCRIPER"); // القيمة الافتراضية
 
   const handleAdd = async() => {
     
     if (!clientName) return;
-    const client = `${clientName} (${clientType})`;
-
-    onAddSession({
-      id: "S" + Math.floor(Math.random() * 10000).toString().padStart(3, "0"),
-      client,
-      startTime: new Date().toISOString(),
-      endTime: null,
-      status: "open",
-      orders: [],
-      totalDue: 0,
-    });
-    authAxios.post('/session',{
-      username:'abood mokk',
-      clientType:'GUEST'
-    });
+    onAddSession({username:clientName,clientType:clientType});
     setClientName("");
     setClientType("مشترك");
     setOpen(false);
@@ -58,18 +44,19 @@ const NewSessionDialog: React.FC<Props> = ({ onAddSession }) => {
         <div className="space-y-4">
           <input
             type="text"
+            required
             placeholder="اسم العميل"
             className="w-full border rounded px-3 py-2"
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
           />
-          <select
+          <select 
             className="w-full border rounded px-3 py-2"
             value={clientType}
             onChange={(e) => setClientType(e.target.value)}
           >
-            <option value="مشترك">مشترك</option>
-            <option value="زائر">زائر</option>
+            <option value="SUBSCRIPER">مشترك</option>
+            <option value="GUESS">زائر</option>
           </select>
         </div>
         <DialogFooter>

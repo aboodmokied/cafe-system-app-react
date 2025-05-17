@@ -14,9 +14,9 @@ const authAxios = axios.create({
 });
 
 authAxios.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = JSON.parse(localStorage.getItem("token"));
   if (token) {
-    config.headers.Authorization = `Bearer ${token}1`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -24,6 +24,7 @@ authAxios.interceptors.request.use((config) => {
 authAxios.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error(error);
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");

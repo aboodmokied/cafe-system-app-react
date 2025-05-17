@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 const RequireAuth = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAuth();
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !localStorage.getItem('token')) {
     return <Navigate to="/login" replace />;
   }
 

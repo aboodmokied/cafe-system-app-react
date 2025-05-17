@@ -1,63 +1,45 @@
 // pages/sessions.tsx
+// export interface Session {
+//   id: string;
+//   username: string;
+//   clientType:"GUEST"|"SUBSCRIPER";
+//   startAt: string;
+//   endAt: string | null;
+//   isActive:boolean;
+
+//   // status: "open" | "closed";
+//   // orders: Order[];
+// }
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import SessionCard from "@/components/sessions/SessionCard";
 import NewSessionDialog from "@/components/sessions/NewSessionDialog";
 import OrdersDialog from "@/components/sessions/OrdersDialog";
+import { fetchSessions, openNewSession } from "@/api/sessions.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Session } from "@/types";
+import { Loader2 } from "lucide-react"; // For spinner icon
 
 interface Order {
   type: string;
   price: number;
 }
 
-enum ClientType{
-  GUEST="GUEST",
-  SUBSCRIPER="SUBSCRIPER"
-}
-
-export interface Session {
-  id: string;
-  username: string;
-  clientType:"GUEST"|"SUBSCRIPER";
-  startAt: string;
-  endAt: string | null;
-  isActive:boolean;
-
-  // status: "open" | "closed";
-  // orders: Order[];
-}
-
 const SessionsPage = () => {
-  const [sessions, setSessions] = useState<Session[]>([
-    {
-      id: "S001",
-      username: "أحمد محمد",
-      startAt: "2025-05-15T10:00:00",
-      endAt: null,
-      isActive:true,
-      clientType:'SUBSCRIPER'
-      // orders: [
-      //   { type: "طلب 1", price: 15 },
-      //   { type: "طلب 2", price: 15 },
-      //   { type: "طلب 3", price: 15 }
-      // ]
-    },
-    {
-      id: "S003",
-      username: "مستخدم زائر",
-      startAt: "2025-05-15T09:15:00",
-      endAt: "2025-05-15T12:30:00",
-      isActive:false,
-      clientType:'GUEST'
-      // orders: [
-      //   { type: "طلب 1", price: 15 },
-      //   { type: "طلب 2", price: 15 },
-      //   { type: "طلب 3", price: 15 },
-      //   { type: "طلب 4", price: 15 }
-      // ]
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['sessions'],
+    queryFn: fetchSessions
+  });
+
+  const mutation = useMutation({
+    mutationFn: openNewSession,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions'] });
     }
-  ]);
+  });
 
   const [ordersDialogOpen, setOrdersDialogOpen] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
@@ -67,34 +49,50 @@ const SessionsPage = () => {
     setOrdersDialogOpen(true);
   };
 
-  const addSession = (newSession: Session) => {
-    setSessions([newSession, ...sessions]);
+  const addSession = (newSession: Pick<Session, "username" | "clientType">) => {
+    if (!newSession.clientType || !newSession.username) return;
+    mutation.mutate(newSession);
   };
 
   const closeSession = (sessionId: string) => {
-    setSessions((prev) =>
-      prev.map((s) =>
-        s.id === sessionId
-          ? { ...s, status: "closed", endTime: new Date().toISOString() }
-          : s
-      )
-    );
+    // implementation coming soon
   };
 
   const updateSessionOrders = (sessionId: string, newOrders: Order[]) => {
-    setSessions((prev) =>
-      prev.map((s) => (s.id === sessionId ? { ...s, orders: newOrders } : s))
-    );
+    // implementation coming soon
   };
 
-  const openSessions = sessions.filter((s) => s.isActive);
-  const closedSessions = sessions.filter((s) => !s.isActive);
-
-  const selectedSession = sessions.find((s) => s.id === selectedSessionId);
-
-  // حساب إجمالي المبلغ في بطاقة الجلسة
   const totalDue = (orders: Order[]) =>
     orders.reduce((acc, o) => acc + o.price, 0);
+
+  const selectedSession = data?.sessions.find((s) => s.id === selectedSessionId);
+
+  // Loading UI
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-muted-foreground">جاري تحميل الجلسات...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Error UI
+  if (isError) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+          <p className="text-destructive text-lg font-semibold">حدث خطأ أثناء تحميل الجلسات</p>
+          <p className="text-muted-foreground text-sm">{error.message}</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  const openSessions = data.sessions.filter((s) => s.isActive);
+  const closedSessions = data.sessions.filter((s) => !s.isActive);
 
   return (
     <Layout>
@@ -115,11 +113,7 @@ const SessionsPage = () => {
             {openSessions.map((session) => (
               <SessionCard
                 key={session.id}
-                session={{
-                  ...session,
-                  // orders: session.orders.length,
-                  // totalDue: totalDue(session.orders)
-                }}
+                session={session}
                 onViewOrders={() => openOrders(session.id)}
                 onCloseSession={() => closeSession(session.id)}
               />
@@ -130,25 +124,17 @@ const SessionsPage = () => {
             {closedSessions.map((session) => (
               <SessionCard
                 key={session.id}
-                session={{
-                  ...session,
-                  // orders: session.orders.length,
-                  // totalDue: totalDue(session.orders)
-                }}
+                session={session}
                 onViewOrders={() => openOrders(session.id)}
               />
             ))}
           </TabsContent>
 
           <TabsContent value="all" className="space-y-4">
-            {sessions.map((session) => (
+            {data.sessions.map((session) => (
               <SessionCard
                 key={session.id}
-                session={{
-                  ...session,
-                  // orders: session.orders.length,
-                  // totalDue: totalDue(session.orders)
-                }}
+                session={session}
                 onViewOrders={() => openOrders(session.id)}
                 onCloseSession={() =>
                   session.isActive && closeSession(session.id)
@@ -159,6 +145,7 @@ const SessionsPage = () => {
         </Tabs>
       </div>
 
+      {/* Future: Orders Dialog */}
       {/* {selectedSession && (
         <OrdersDialog
           open={ordersDialogOpen}

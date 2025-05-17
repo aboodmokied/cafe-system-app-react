@@ -1,7 +1,7 @@
 export interface Session {
   id: string;
   username: string;
-  clientType:"GUEST"|"SUBSCRIPER";
+  clientType:string;
   startAt: string;
   endAt: string | null;
   isActive:boolean;
@@ -25,4 +25,13 @@ export interface User{
 export interface LoginResponse {
   token: string;
   user: User;
+}
+
+
+export interface FetchSessionsResponse{
+  sessions:Session[]
+}
+
+export interface AddSessionsResponse{
+  sessions:Session
 }
