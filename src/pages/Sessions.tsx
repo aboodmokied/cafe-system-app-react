@@ -42,9 +42,9 @@ const SessionsPage = () => {
   });
 
   const [ordersDialogOpen, setOrdersDialogOpen] = useState(false);
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
 
-  const openOrders = (sessionId: string) => {
+  const openOrders = (sessionId: number) => {
     setSelectedSessionId(sessionId);
     setOrdersDialogOpen(true);
   };
@@ -54,7 +54,7 @@ const SessionsPage = () => {
     mutation.mutate(newSession);
   };
 
-  const closeSession = (sessionId: string) => {
+  const closeSession = (sessionId: number) => {
     // implementation coming soon
   };
 
@@ -145,18 +145,19 @@ const SessionsPage = () => {
         </Tabs>
       </div>
 
-      {/* Future: Orders Dialog */}
-      {/* {selectedSession && (
+      
+      {selectedSession && (
         <OrdersDialog
           open={ordersDialogOpen}
-          session={selectedSession}
+          // session={selectedSession}
+          sessionId={selectedSession.id}
           onClose={() => setOrdersDialogOpen(false)}
-          orders={selectedSession.orders}
-          onUpdateSessionOrders={(newOrders) =>
-            updateSessionOrders(selectedSession.id, newOrders)
-          }
+          // orders={selectedSession.orders}
+        //   onUpdateSessionOrders={(newOrders) =>
+        //     updateSessionOrders(selectedSession.id, newOrders)
+        //   }
         />
-      )} */}
+      )}
     </Layout>
   );
 };

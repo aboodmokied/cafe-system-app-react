@@ -9,70 +9,78 @@ import {
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
 import AddOrderDialog from "./AddOrderDialog";
+import { Order } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { fetchOrders } from "@/api/orders.api";
 
-interface Order {
-  type: string;
-  price: number;
-}
+
 
 interface Props {
   open: boolean;
-  session: any;
+  sessionId: number;
   onClose: () => void;
-  onUpdateSessionOrders: (orders: Order[]) => void;
-  orders: Order[];
+  // onUpdateSessionOrders: (orders: Order[]) => void;
+  // orders: Order[];
 }
 
 const OrdersDialog: React.FC<Props> = ({
   open,
-  session,
+  sessionId,
   onClose,
-  onUpdateSessionOrders,
-  orders
+  // onUpdateSessionOrders,
+  // orders
 }) => {
-  const [orderPrices, setOrderPrices] = useState<Order[]>(orders || []);
+  // const [orderPrices, setOrderPrices] = useState<Order[]>(orders || []);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: [`session-${sessionId}-orders`],
+    queryFn: ()=>fetchOrders(sessionId),
+    initialData:{
+      orders:[]
+    }
+  });
+  
   const [addOrderOpen, setAddOrderOpen] = useState(false);
 
-  useEffect(() => {
-    setOrderPrices(orders || []);
-  }, [orders]);
+  // useEffect(() => {
+  //   setOrderPrices(orders || []);
+  // }, [orders]);
 
   const handlePriceChange = (index: number, value: string) => {
-    const newOrders = [...orderPrices];
+    const newOrders = [...data.orders];
     const price = parseFloat(value);
     if (!isNaN(price)) {
       newOrders[index].price = price;
-      setOrderPrices(newOrders);
-      onUpdateSessionOrders(newOrders);
+      // setOrderPrices(newOrders);
+      // onUpdateSessionOrders(newOrders);
     }
   };
 
   const handleAddOrder = (order: Order) => {
-    const newOrders = [...orderPrices, order];
-    setOrderPrices(newOrders);
-    onUpdateSessionOrders(newOrders);
+    const newOrders = [...data.orders, order];
+    // setOrderPrices(newOrders);
+    // onUpdateSessionOrders(newOrders);
   };
 
   // حذف طلب بناءً على الإندكس
   const handleDeleteOrder = (index: number) => {
-    const newOrders = orderPrices.filter((_, i) => i !== index);
-    setOrderPrices(newOrders);
-    onUpdateSessionOrders(newOrders);
+    const newOrders = data.orders.filter((_, i) => i !== index);
+    // setOrderPrices(newOrders);
+    // onUpdateSessionOrders(newOrders);
   };
 
-  const totalPrice = orderPrices.reduce((acc, o) => acc + o.price, 0);
+  const totalPrice = data.orders.reduce((acc, o) => acc + o.price, 0);
 
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
         <DialogContent dir="rtl" className="max-w-md">
           <DialogHeader>
-            <DialogTitle>الطلبات للجلسة {session?.id}</DialogTitle>
+            <DialogTitle>الطلبات للجلسة {sessionId}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-3 max-h-96 overflow-y-auto">
-            {orderPrices.length === 0 && <p>لا توجد طلبات</p>}
-            {orderPrices.map((order, index) => (
+            {data.orders.length === 0 && <p>لا توجد طلبات</p>}
+            {data.orders.map((order:Order, index) => (
               <div
                 key={index}
                 className="border p-2 rounded flex justify-between items-center text-sm gap-2"
@@ -114,7 +122,7 @@ const OrdersDialog: React.FC<Props> = ({
       <AddOrderDialog
         open={addOrderOpen}
         onOpenChange={setAddOrderOpen}
-        onAddOrder={handleAddOrder}
+        sessionId={sessionId}
       />
     </>
   );

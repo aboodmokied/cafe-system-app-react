@@ -1,25 +1,63 @@
 export interface Session {
-  id: string;
+  id: number;
   username: string;
   clientType:string;
   startAt: string;
   endAt: string | null;
   isActive:boolean;
-
-  // status: "open" | "closed";
   // orders: Order[];
 }
 
 export interface Order {
-  type: string;
-  price: number;
+  id: number;
+  sessionId: number;
+  type: 'CARD' | 'CHARGING' | 'OTHER';
+  session: Session;
+  price:number
+  cardOrder?: CardOrder;
+  chargingOrder?: ChargingOrder;
+  otherOrder?: OtherOrder;
 }
 
+export interface CardOrder{
+  id: number;
+  cardId: number;
+  // price:number;
+}
+export interface ChargingOrder{
+  id:number;
+  durationMinutes: number;
+  // price: number;
+  startAt: Date;
+  endAt: Date;
+}
+
+export interface OtherOrder{
+  id:number;
+  title:string;
+  // price:number;
+}
+
+export interface AddOtherOrderPayload{
+  sessionId:number;
+  type:'OTHER';
+  title:string;
+  price:number;
+}
+export interface AddCardOrderPayload{
+  sessionId:number;
+  type:'CARD';
+  cardId:number;
+}
+export interface AddChargingOrderPayload{
+  sessionId:number;
+  type:'CHARGING';
+}
 
 export interface User{
-    name:string;
-    email:string;
-    roles?:[]
+  name:string;
+  email:string;
+  roles?:[]
 }
 
 export interface LoginResponse {
@@ -34,4 +72,8 @@ export interface FetchSessionsResponse{
 
 export interface AddSessionsResponse{
   sessions:Session
+}
+
+export interface FetchOrdersResponse{
+  orders:Order[]
 }
