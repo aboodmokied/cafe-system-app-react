@@ -85,7 +85,7 @@ const OrdersDialog: React.FC<Props> = ({
                 key={index}
                 className="border p-2 rounded flex justify-between items-center text-sm gap-2"
               >
-                <span className="font-semibold">{order.type || `طلب رقم ${index + 1}`}</span>
+                <span className="font-semibold">{order.type=='OTHER'?order.otherOrder.title:order.type}</span>
                 <input
                   type="number"
                   className="border rounded px-2 py-1 w-24 text-end"
