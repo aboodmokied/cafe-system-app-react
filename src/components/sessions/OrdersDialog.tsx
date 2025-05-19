@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
 import AddOrderDialog from "./AddOrderDialog";
 import { Order } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import { fetchOrders } from "@/api/orders.api";
-
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchOrders, stopChargingOrder } from "@/api/orders.api";
+import { formatDistanceToNow } from 'date-fns'
+import { ar } from 'date-fns/locale'
 
 
 interface Props {
@@ -23,6 +24,20 @@ interface Props {
   // orders: Order[];
 }
 
+const getDuration = (start: Date) => {
+  const ms = Date.now() - new Date(start).getTime()
+  const minutes = Math.floor(ms / 60000)
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  return `${hours} ساعة و ${remainingMinutes} دقيقة`
+}
+
+const formatMinutesToHoursAndMinutes = (totalMinutes: number): string => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours} ساعة و ${minutes} دقيقة`;
+};
+
 const OrdersDialog: React.FC<Props> = ({
   open,
   sessionId,
@@ -30,7 +45,9 @@ const OrdersDialog: React.FC<Props> = ({
   // onUpdateSessionOrders,
   // orders
 }) => {
-  // const [orderPrices, setOrderPrices] = useState<Order[]>(orders || []);
+  const queryClient = useQueryClient();
+
+  // get orders
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [`session-${sessionId}-orders`],
     queryFn: ()=>fetchOrders(sessionId),
@@ -39,7 +56,19 @@ const OrdersDialog: React.FC<Props> = ({
     }
   });
   
+  // close charging order
+  const mutation = useMutation({
+    mutationFn: stopChargingOrder,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`session-${sessionId}-orders`]
+      });
+    }
+  });
+
   const [addOrderOpen, setAddOrderOpen] = useState(false);
+  const [stoppingIndex, setStoppingIndex] = useState<number | null>(null)
+  const [priceInput, setPriceInput] = useState<string>('')
 
   // useEffect(() => {
   //   setOrderPrices(orders || []);
@@ -67,6 +96,18 @@ const OrdersDialog: React.FC<Props> = ({
     // setOrderPrices(newOrders);
     // onUpdateSessionOrders(newOrders);
   };
+  const handleStopCharging = (index: number) => {
+    setStoppingIndex(index)
+    setPriceInput('') // إعادة تعيين حقل السعر
+  }
+
+  const handleSavePrice=(orderId:number,price:string)=>{
+    mutation.mutate({
+      orderId,
+      price:+price,
+      endAt:new Date()
+    });
+  }
 
   const totalPrice = data.orders.reduce((acc, o) => acc + o.price, 0);
 
@@ -78,30 +119,116 @@ const OrdersDialog: React.FC<Props> = ({
             <DialogTitle>الطلبات للجلسة {sessionId}</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {data.orders.length === 0 && <p>لا توجد طلبات</p>}
-            {data.orders.map((order:Order, index) => (
-              <div
-                key={index}
-                className="border p-2 rounded flex justify-between items-center text-sm gap-2"
-              >
-                <span className="font-semibold">{order.type=='OTHER'?order.otherOrder.title:order.type}</span>
-                <input
-                  type="number"
-                  className="border rounded px-2 py-1 w-24 text-end"
-                  value={order.price}
-                  onChange={(e) => handlePriceChange(index, e.target.value)}
-                />
+    <div className="space-y-3 max-h-96 overflow-y-auto">
+      {data.orders.length === 0 && <p>لا توجد طلبات</p>}
+      {data.orders.map((order: Order) => {
+        const isCharging = order.type === 'CHARGING'
+        const isActive = isCharging && !(order.chargingOrder.endAt)
+        const isStopping = stoppingIndex === order.id
+
+      return (
+        <div
+          key={order.id}
+          className="border p-3 rounded text-sm space-y-2 bg-white shadow-sm"
+        >
+          {/* عنوان الطلب */}
+          <div className="flex justify-between items-center">
+            <span className="font-semibold">
+              {order.type === 'OTHER'
+                ? order.otherOrder.title
+                : order.type === 'CHARGING'
+                ? "شحن"
+                : order.type === 'CARD'
+                ? "بطاقة إنترنت"
+                : order.type}
+            </span>
+            <div className="flex gap-2">
+                {isCharging && isActive && !isStopping && (
                 <Button
-                  variant="destructive"
                   size="sm"
-                  onClick={() => handleDeleteOrder(index)}
+                  variant="secondary"
+                  onClick={() => handleStopCharging(order.id)}
                 >
-                  حذف
+                  إيقاف
+                </Button>
+              )}
+
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => handleDeleteOrder(order.id)}
+              >
+                حذف
+              </Button>
+            </div>    
+            
+          </div>
+
+          {/* السعر */}
+          <div className="text-xs font-semibold">
+            {isCharging && !order.price ? (
+              'سيتم احتساب السعر بناءً على مدة الشحن'
+            ) : (
+              `السعر: ${order.price || 'لم يتم تحديده بعد'}`
+            )}
+          </div>
+
+          {/* مدة الشحن */}
+          {isCharging && isActive && (
+            <div className="text-xs text-gray-600">
+              بدأ منذ: {formatDistanceToNow(new Date(order.chargingOrder.startAt), { locale: ar })}
+            </div>
+          )}
+
+           {isCharging && !isActive &&(
+              <div className="text-xs text-gray-600">
+                تم الشحن لمدة: {formatMinutesToHoursAndMinutes(order.chargingOrder.durationMinutes)}
+              </div>
+            )
+          }
+
+          {/* تفاصيل إيقاف الشحن */}
+          {isStopping && (
+            <div className="mt-2 space-y-2 border-t pt-2 text-xs">
+              <div>⏱️ مدة الشحن: {getDuration(order.chargingOrder.startAt)}</div>
+              <div className="flex items-center gap-2">
+                <label htmlFor={`price-${order.id}`} className="whitespace-nowrap">
+                  السعر:
+                </label>
+                <input
+                  id={`price-${order.id}`}
+                  type="number"
+                  className="border rounded px-2 py-1 w-32 text-end"
+                  value={priceInput}
+                  onChange={(e) => setPriceInput(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    handleSavePrice(order.id, priceInput)
+                    setStoppingIndex(null)
+                  }}
+                >
+                  حفظ السعر
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setStoppingIndex(null)
+                  }}
+                >
+                  الغاء
                 </Button>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+        </div>
+          )
+        })}
+      </div>
+
 
           <div className="flex justify-between items-center mt-4">
             <Button variant="secondary" onClick={() => setAddOrderOpen(true)}>

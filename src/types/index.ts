@@ -13,7 +13,7 @@ export interface Order {
   sessionId: number;
   type: 'CARD' | 'CHARGING' | 'OTHER';
   session: Session;
-  price:number
+  price?:number
   cardOrder?: CardOrder;
   chargingOrder?: ChargingOrder;
   otherOrder?: OtherOrder;
@@ -26,7 +26,7 @@ export interface CardOrder{
 }
 export interface ChargingOrder{
   id:number;
-  durationMinutes: number;
+  durationMinutes?: number;
   // price: number;
   startAt: Date;
   endAt: Date;
@@ -52,6 +52,11 @@ export interface AddCardOrderPayload{
 export interface AddChargingOrderPayload{
   sessionId:number;
   type:'CHARGING';
+}
+export interface stopChargingOrderPayload{
+  orderId:number;
+  price:number;
+  endAt:Date
 }
 
 export interface User{

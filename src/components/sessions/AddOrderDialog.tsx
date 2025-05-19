@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addOtherOrder } from "@/api/orders.api";
+import { addChargingOrder, addOtherOrder } from "@/api/orders.api";
 
 // Example card types and their expected prices
 const cardTypes = [
@@ -23,6 +23,19 @@ interface AddOrderDialogProps {
   sessionId: number;
 }
 
+  const createOrder = async (data: any) => {
+  switch (data.type) {
+    case "CARD":
+      // return await addCard(data);
+    case "CHARGING":
+      return await addChargingOrder(data);
+    case "OTHER":
+      return await addOtherOrder(data);
+    default:
+      throw new Error("Invalid order type");
+  }
+};
+
 const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
   open,
   onOpenChange,
@@ -33,10 +46,10 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
   const [price, setPrice] = useState("");
   const [title, setTitle] = useState("");
   const [cardType, setCardType] = useState("");
-  const [duration, setDuration] = useState("");
+  // const [duration, setDuration] = useState("");
 
   const mutation = useMutation({
-    mutationFn: addOtherOrder,
+    mutationFn: createOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [`session-${sessionId}-orders`]
@@ -50,7 +63,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       setPrice("");
       setTitle("");
       setCardType("");
-      setDuration("");
+      // setDuration("");
     }
   }, [open]);
 
@@ -59,8 +72,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       if (!title.trim() || !price) return;
       mutation.mutate({ sessionId, type, title, price: +price });
     } else if (type === "CHARGING") {
-      if (!duration) return;
-      // mutation.mutate({ sessionId, type, duration });
+      // if (!duration) return;
+      mutation.mutate({ sessionId, type });
     } else if (type === "CARD") {
       if (!cardType) return;
       const card = cardTypes.find(c => c.value === cardType);
@@ -120,7 +133,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
           </>
         )}
 
-        {type === "CHARGING" && (
+        {/*type === "CHARGING" && (
           <input
             type="text"
             placeholder="المدة (مثال: 30 يوم)"
@@ -128,7 +141,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
           />
-        )}
+        )*/}
 
         {type === "OTHER" && (
           <>
