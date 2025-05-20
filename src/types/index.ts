@@ -8,6 +8,20 @@ export interface Session {
   // orders: Order[];
 }
 
+export interface User{
+  name:string;
+  email:string;
+  roles?:[]
+}
+
+export interface Card{
+  id:number;
+  label:string;
+  price:number;
+  qty:number;
+}
+
+
 export interface Order {
   id: number;
   sessionId: number;
@@ -59,11 +73,7 @@ export interface stopChargingOrderPayload{
   endAt:Date
 }
 
-export interface User{
-  name:string;
-  email:string;
-  roles?:[]
-}
+
 
 export interface LoginResponse {
   token: string;
@@ -81,4 +91,14 @@ export interface AddSessionsResponse{
 
 export interface FetchOrdersResponse{
   orders:Order[]
+}
+export interface FetchCardsResponse{
+  cards:Card[]
+}
+
+
+export interface CreateCardPayload{
+  label:string;
+  privce:number;
+  qty?:number;
 }
