@@ -16,7 +16,7 @@ import { useAuth } from "@/auth/AuthContext";
 
 const navItems = [
   { title: "الرئيسية", icon: <Home size={20} />, path: "/" },
-  { title: "بطاقات المخزون", icon: <CreditCard size={20} />, path: "/card-inventory" },
+  { title: "مخزون البطاقات", icon: <CreditCard size={20} />, path: "/card-inventory" },
   { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscriptions" },
   { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
   { title: "نقطة البيع", icon: <ShoppingCart size={20} />, path: "/pos" },

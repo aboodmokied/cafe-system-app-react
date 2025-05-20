@@ -12,7 +12,7 @@ import {
 const Dashboard = () => {
   const stats = [
     { 
-      title: "بطاقات المخزون", 
+      title: "مخزون البطاقات", 
       value: "235", 
       description: "البطاقات المتوفرة", 
       icon: <CreditCard className="text-purple-500" size={24} /> 

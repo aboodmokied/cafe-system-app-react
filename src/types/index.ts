@@ -19,6 +19,8 @@ export interface Card{
   label:string;
   price:number;
   qty:number;
+  hours:number;
+  speed?:string;
 }
 
 
@@ -99,6 +101,8 @@ export interface FetchCardsResponse{
 
 export interface CreateCardPayload{
   label:string;
-  privce:number;
+  price:number;
+  speed?:string;
+  hours:number;
   qty?:number;
 }
