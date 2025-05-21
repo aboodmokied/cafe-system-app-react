@@ -1,4 +1,4 @@
-import { AddChargingOrderPayload, AddOtherOrderPayload, FetchOrdersResponse, stopChargingOrderPayload } from "@/types"
+import { AddCardOrderPayload, AddChargingOrderPayload, AddOtherOrderPayload, FetchOrdersResponse, stopChargingOrderPayload } from "@/types"
 import authAxios from "./authAxios"
 
 
@@ -9,6 +9,11 @@ export const fetchOrders=async(sessionId:number)=>{
 };
 
 
+export const addCardOrder = async (newOrder:AddCardOrderPayload) => {
+  const response = await authAxios.post('/order', newOrder)
+  console.log(response.data);
+  return response.data
+}
 export const addOtherOrder = async (newOrder:AddOtherOrderPayload) => {
   const response = await authAxios.post('/order', newOrder)
   console.log(response.data);
