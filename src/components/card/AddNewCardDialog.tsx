@@ -20,20 +20,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addNewCard } from "@/api/card.api";
 
 const AddNewCardDialog = ({
-  onAdd,
   openAddCard,
   setOpenAddCard,
 }: {
   openAddCard: boolean;
   setOpenAddCard: any;
-  onAdd: (card: any) => void;
 }) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: addNewCard,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cards","order-cards"] });
-      setForm({ label: "", price: 0, qty: 0, hours: 0, speed: "" });
+      queryClient.invalidateQueries({ queryKey: ["cards"] });
+      setForm({ label: "", price: 0, hours: 0, speed: "" });
       setOpenAddCard(false);
     },
     onError: (error: any) => {
@@ -49,7 +47,7 @@ const AddNewCardDialog = ({
   const [form, setForm] = useState({
     label: "",
     price: 0,
-    qty: 0,
+    // qty: 0,
     hours: 0,
     speed: "",
   });
@@ -64,7 +62,7 @@ const AddNewCardDialog = ({
   const errs: string[] = [];
   if (!form.label) errs.push("العنوان مطلوب");
   if (!form.price) errs.push("السعر مطلوب");
-  if (!form.qty) errs.push("العدد مطلوب");
+  // if (!form.qty) errs.push("العدد مطلوب");
   if (!form.hours) errs.push("المدة مطلوبة");
   return errs;
 };
@@ -80,7 +78,7 @@ const AddNewCardDialog = ({
       label: form.label,
       hours: +form.hours,
       price: +form.price,
-      qty: +form.qty,
+      // qty: +form.qty,
       speed: form.speed,
     });
   };
@@ -101,10 +99,10 @@ const AddNewCardDialog = ({
             <Label htmlFor="price">السعر</Label>
             <Input id="price" type="number" step=".5" value={form.price} onChange={(e) => handleChange("price", e.target.value)} />
           </div>
-          <div>
+          {/* <div>
             <Label htmlFor="qty">العدد</Label>
             <Input id="qty" type="number" value={form.qty} onChange={(e) => handleChange("qty", e.target.value)} />
-          </div>
+          </div> */}
           <div>
             <Label htmlFor="hours">المدة (بالساعات)</Label>
             <Input id="hours" type="number" value={form.hours} onChange={(e) => handleChange("hours", e.target.value)} />

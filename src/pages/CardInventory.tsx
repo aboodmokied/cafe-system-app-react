@@ -4,18 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Card as CardType } from "@/types";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-
 import AddNewCardDialog from "@/components/card/AddNewCardDialog";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCards } from "@/api/card.api";
+import AddToStockDialog from "@/components/card/AddToStockDialog";
 
 const CardInventory = () => {
   const [openAddStockDialog, setOpenAddStockDialog] = useState(false);
@@ -46,7 +38,6 @@ const CardInventory = () => {
           <h1 className="text-2xl font-bold">مخزون البطاقات</h1>
         </div>
 
-        {/* تحميل البيانات */}
         {isLoading ? (
           <div className="flex justify-center py-20 text-gray-500">جاري تحميل البيانات...</div>
         ) : isError ? (
@@ -108,24 +99,14 @@ const CardInventory = () => {
       <AddNewCardDialog
         openAddCard={openAddCard}
         setOpenAddCard={setOpenAddCard}
-        onAdd={(newCard) => {
-          // أضف البطاقة الجديدة للمخزون هنا
-          console.log("تمت إضافة البطاقة:", newCard);
-        }}
       />
 
-      {/* Dialog: إضافة للمخزون */}
-      <Dialog open={openAddStockDialog} onOpenChange={setOpenAddStockDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>إضافة للمخزون</DialogTitle>
-            <DialogDescription>
-              {selectedCard?.label && `إضافة كمية جديدة إلى: ${selectedCard.label}`}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-4 text-sm text-gray-600">نموذج تحديد الكمية هنا...</div>
-        </DialogContent>
-      </Dialog>
+      {/* Dialog: إضافة للمخزون (مفصول كمكون مستقل) */}
+      <AddToStockDialog
+        open={openAddStockDialog}
+        onOpenChange={setOpenAddStockDialog}
+        card={selectedCard}
+      />
     </Layout>
   );
 };

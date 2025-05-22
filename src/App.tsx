@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import RequireAuth from "./auth/RequireAuth";
 import LoginPage from "./pages/Login"; 
 import { AuthProvider } from "./auth/AuthContext";
+import Suppliers from "./pages/Suppliers";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
             <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Reports /></RequireAuth>} />
+            <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
 
             {/* صفحة غير موجودة */}

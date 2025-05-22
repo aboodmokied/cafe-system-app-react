@@ -5,7 +5,6 @@ export interface Session {
   startAt: string;
   endAt: string | null;
   isActive:boolean;
-  // orders: Order[];
 }
 
 export interface User{
@@ -23,6 +22,12 @@ export interface Card{
   speed?:string;
 }
 
+
+export interface Supplier {
+  id:number;
+  name:string;
+  phone:string;
+}
 
 export interface Order {
   id: number;
@@ -76,6 +81,15 @@ export interface stopChargingOrderPayload{
 }
 
 
+export interface AddToStockCardPayload{
+  cardId:number;
+  supplierId:number;
+  qty:number;
+  totalPrice:number;
+  paidPrice: number;
+}
+
+
 
 export interface LoginResponse {
   token: string;
@@ -97,6 +111,9 @@ export interface FetchOrdersResponse{
 export interface FetchCardsResponse{
   cards:Card[]
 }
+export interface FetchSuppliersResponse{
+  suppliers:Supplier[]
+}
 
 
 export interface CreateCardPayload{
@@ -106,3 +123,9 @@ export interface CreateCardPayload{
   hours:number;
   qty?:number;
 }
+
+export interface CreateSupplierPayload{
+  name:string;
+  phone:string;
+}
+

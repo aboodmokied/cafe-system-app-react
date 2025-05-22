@@ -164,6 +164,15 @@ const OrdersDialog: React.FC<Props> = ({
             
           </div>
 
+          {/*  عنوان البطاقة */}
+          {
+            order.type=="CARD"&&(
+              <div className="text-xs font-semibold">
+                عنوان البطاقة: {order.cardOrder.cardId}
+              </div>
+            )
+          }
+          
           {/* السعر */}
           <div className="text-xs font-semibold">
             {isCharging && !order.price ? (

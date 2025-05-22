@@ -8,6 +8,7 @@ import {
   ShoppingCart, 
   BarChart, 
   Settings,
+  Plus,
   LogOut,
   X
 } from "lucide-react";
@@ -17,6 +18,7 @@ import { useAuth } from "@/auth/AuthContext";
 const navItems = [
   { title: "الرئيسية", icon: <Home size={20} />, path: "/" },
   { title: "مخزون البطاقات", icon: <CreditCard size={20} />, path: "/card-inventory" },
+  { title: "شركات الإمداد", icon: <Plus size={20} />, path: "/suppliers" },
   { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscriptions" },
   { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
   { title: "نقطة البيع", icon: <ShoppingCart size={20} />, path: "/pos" },
