@@ -4,7 +4,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -19,16 +19,29 @@ const NewSessionDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [clientName, setClientName] = useState("");
   const [clientType, setClientType] = useState("SUBSCRIPER");
+  const [errors, setErrors] = useState<string[]>([]);
 
-  // إنشاء جلسة جديدة
   const mutation = useMutation({
     mutationFn: openNewSession,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      setErrors([]);
+      setClientName("");
+      setClientType("SUBSCRIPER");
+      setOpen(false);
+    },
+    onError: (error: any) => {
+      if (
+        error.response?.status === 400 &&
+        Array.isArray(error.response.data.message)
+      ) {
+        setErrors(error.response.data.message);
+      } else {
+        setErrors(["حدث خطأ غير متوقع"]);
+      }
     },
   });
 
-  // جلب بيانات المشترك حسب الاسم
   const {
     data,
     isLoading,
@@ -41,10 +54,10 @@ const NewSessionDialog: React.FC = () => {
     initialData: {
       subscriper: null,
     },
-    enabled: false, // التفعيل اليدوي فقط
+    enabled: false,
     retry: false,
   });
-  console.log({da:data.subscriper})
+
   const handleAdd = () => {
     if (!clientType || !clientName) return;
 
@@ -63,22 +76,25 @@ const NewSessionDialog: React.FC = () => {
       });
     }
 
-    setClientName("");
-    setClientType("SUBSCRIPER");
-    setOpen(false);
+    // setClientName("");
+    // setClientType("SUBSCRIPER");
+    // setOpen(false);
   };
+
   const handleDialogClose = (open: boolean) => {
-  setOpen(open);
-  if (!open) {
-    setClientName("");
-    setClientType("SUBSCRIPER");
-    queryClient.removeQueries({ queryKey: [`subscriper-${clientName}`] });
-  }
-};
-  const handleClientNameChange=(e)=>{
-    // queryClient.removeQueries({ queryKey: ["subscriber", clientName] });
-    setClientName(e.target.value)
-  }
+    setOpen(open);
+    if (!open) {
+      setClientName("");
+      setClientType("SUBSCRIPER");
+      setErrors([]);
+      queryClient.removeQueries({ queryKey: [`subscriper-${clientName}`] });
+    }
+  };
+
+  const handleClientNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setClientName(e.target.value);
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogTrigger asChild>
@@ -145,6 +161,15 @@ const NewSessionDialog: React.FC = () => {
                 )}
               </div>
             </>
+          )}
+
+          {/* عرض الأخطاء */}
+          {errors.length > 0 && (
+            <ul className="bg-red-100 border border-red-300 text-red-700 rounded p-3 text-sm space-y-1">
+              {errors.map((err, index) => (
+                <li key={index}>• {err}</li>
+              ))}
+            </ul>
           )}
         </div>
 
