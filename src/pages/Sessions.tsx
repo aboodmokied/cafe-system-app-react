@@ -27,19 +27,14 @@ interface Order {
 }
 
 const SessionsPage = () => {
-  const queryClient = useQueryClient();
+  
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['sessions'],
     queryFn: fetchSessions
   });
 
-  const mutation = useMutation({
-    mutationFn: openNewSession,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] });
-    }
-  });
+  
 
   const [ordersDialogOpen, setOrdersDialogOpen] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
@@ -49,10 +44,10 @@ const SessionsPage = () => {
     setOrdersDialogOpen(true);
   };
 
-  const addSession = (newSession: Pick<Session, "username" | "clientType">) => {
-    if (!newSession.clientType || !newSession.username) return;
-    mutation.mutate(newSession);
-  };
+  // const addSession = (newSession: Pick<Session, "username" | "clientType">) => {
+  //   if (!newSession.clientType || !newSession.username) return;
+  //   mutation.mutate(newSession);
+  // };
 
   const closeSession = (sessionId: number) => {
     // implementation coming soon
@@ -98,7 +93,7 @@ const SessionsPage = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <NewSessionDialog onAddSession={addSession} />
+          <NewSessionDialog />
           <h1 className="text-2xl font-bold">الجلسات</h1>
         </div>
 

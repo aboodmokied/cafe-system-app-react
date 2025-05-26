@@ -22,6 +22,13 @@ export interface Card{
   speed?:string;
 }
 
+export interface Subscriper {
+  id:number;
+  username:string;
+  phone:string;
+  email:string;
+  type: 'monthly'|'weekly';
+}
 
 export interface Supplier {
   id:number;
@@ -101,6 +108,7 @@ export interface FetchSessionsResponse{
   sessions:Session[]
 }
 
+
 export interface AddSessionsResponse{
   sessions:Session
 }
@@ -122,6 +130,17 @@ export interface CreateCardPayload{
   speed?:string;
   hours:number;
   qty?:number;
+}
+
+export interface CreateGuestSessionPayload{
+  username:string;
+  clientType:'GUEST';
+}
+
+export interface CreateSubscriperSessionPayload{
+  username:string;
+  subscriperId:number;
+  clientType:'SUBSCRIPER';
 }
 
 export interface CreateSupplierPayload{
