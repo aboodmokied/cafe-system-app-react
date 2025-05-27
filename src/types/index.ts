@@ -122,6 +122,9 @@ export interface FetchCardsResponse{
 export interface FetchSuppliersResponse{
   suppliers:Supplier[]
 }
+export interface FetchSupscripersResponse{
+  subscripers:Subscriper[]
+}
 
 
 export interface CreateCardPayload{
@@ -130,6 +133,13 @@ export interface CreateCardPayload{
   speed?:string;
   hours:number;
   qty?:number;
+}
+
+export interface CreateSubscriperPayload{
+  username:string;
+  email:string;
+  phone:string;
+  type: 'monthly'|'weekly';
 }
 
 export interface CreateGuestSessionPayload{

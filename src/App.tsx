@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import CardInventory from "./pages/CardInventory";
-import Subscriptions from "./pages/Subscriptions";
 import Sessions from "./pages/Sessions";
 import POS from "./pages/POS";
 import Reports from "./pages/Reports";
@@ -15,6 +14,7 @@ import RequireAuth from "./auth/RequireAuth";
 import LoginPage from "./pages/Login"; 
 import { AuthProvider } from "./auth/AuthContext";
 import Suppliers from "./pages/Suppliers";
+import Subscripers from "./pages/Subscripers";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +32,7 @@ const App = () => (
             {/* صفحات تتطلب تسجيل دخول */}
             <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
             <Route path="/card-inventory" element={<RequireAuth><CardInventory /></RequireAuth>} />
-            <Route path="/subscriptions" element={<RequireAuth><Subscriptions /></RequireAuth>} />
+            <Route path="/subscripers" element={<RequireAuth><Subscripers /></RequireAuth>} />
             <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
             <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Reports /></RequireAuth>} />
