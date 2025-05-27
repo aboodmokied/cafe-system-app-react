@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100" dir="rtl">
       <Header />
       <div className="flex flex-1">
         {/* Mobile sidebar toggle button */}

@@ -28,7 +28,7 @@ const formatDate = (dateString: string) =>
 
 const SessionCard: React.FC<Props> = ({ session, onViewOrders, onCloseSession }) => {
   return (
-    <Card className="p-4">
+    <Card className="p-4" dir="rtl">
       <div className="flex flex-col md:flex-row justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
