@@ -1,4 +1,4 @@
-import {  CreateSubscriperPayload, FetchSupscripersResponse, Subscriper } from "@/types";
+import {  CreateSubscriperPayload, FetchSupscripersResponse, Subscriper, SubscriperReportResponse } from "@/types";
 import authAxios from "./authAxios";
 
 
@@ -19,6 +19,14 @@ export const createSubscriper = async (newSubscriper:CreateSubscriperPayload) =>
 
 export const fetchSubscriberByName = async (username: string) => {
   const res=await authAxios.get<{subscriper:Subscriper}>(`/subscriper/${username}`);
+  console.log(res.data)
+  return res.data;
+};
+
+
+
+export const fetchSubscriperReport= async (id: number) => {
+  const res=await authAxios.get<SubscriperReportResponse>(`/subscriper/${id}/report`);
   console.log(res.data)
   return res.data;
 };

@@ -30,6 +30,27 @@ export interface Subscriper {
   type: 'monthly'|'weekly';
 }
 
+
+export interface SubscriperReport extends Subscriper{
+  billings:Billing[],
+  totalPrice:number
+}
+
+export interface SubscriperReportResponse{
+  subscriper:SubscriperReport;
+}
+
+export interface Billing{
+  id:number;
+  subscriperId:number;
+  startDate:Date;
+  endDate:Date;
+  type: 'weekly' | 'monthly';
+  isPaid: boolean;
+  sessions?:Session[];
+  totalPrice?:number;
+}
+
 export interface Supplier {
   id:number;
   name:string;

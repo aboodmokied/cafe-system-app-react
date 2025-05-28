@@ -7,6 +7,7 @@ import { PlusCircle, Search } from "lucide-react";
 import NewSubscriptionDialog from "@/components/subscripers/NewSubscriptionDialog";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSubscribers } from "@/api/subscriper.api";
+import { Link } from "react-router-dom";
 
 type TabType = "all" | "weekly" | "monthly";
 
@@ -32,7 +33,7 @@ const Subscripers = () => {
 
   return (
     <Layout>
-      <div dir="rtl" className="space-y-6 text-right">
+      <div className="space-y-6 text-right">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <NewSubscriptionDialog />
           <h1 className="text-2xl font-bold">الاشتراكات</h1>
@@ -69,7 +70,7 @@ const Subscripers = () => {
                   <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
                     <div className="flex items-center">
                       <Button variant="outline" size="sm">
-                        عرض التفاصيل
+                        <Link to={`/subscripers/${subscription.id}/report`}>عرض التقرير</Link>
                       </Button>
                     </div>
 
