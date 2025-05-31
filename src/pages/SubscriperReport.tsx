@@ -7,15 +7,18 @@ import Layout from "@/components/layout/Layout";
 // import SessionOrdersDialog from "./SessionOrdersDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Billing, Session, SubscriperReportResponse } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchSubscriperReport } from "@/api/subscriper.api";
 import SessionOrdersDialog from "@/components/sessions/SessionOrdersDialog";
+import { BillingPaymentDialog } from "@/components/subscripers/BillingPaymentDialog";
 
 const SubscriperReport = () => {
-  const [expandedBillingId, setExpandedBillingId] = useState<number | null>(null);
+  const [paymentBillingId, setPaymentBillingId] = useState<number | null>(null);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [showOrdersDialog, setShowOrdersDialog] = useState(false);
-
+  const [paymentDialogBillingId, setPaymentDialogBillingId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
 
   if (!id) return <div className="text-red-500">لا يوجد معرف مشترك.</div>;
@@ -24,6 +27,12 @@ const SubscriperReport = () => {
     queryKey: [`subscriper-${id}-report`],
     queryFn: () => fetchSubscriperReport(+id),
   });
+
+  // When opening the dialog:
+  const handleOpenPaymentDialog = (billingId: number) => {
+    setPaymentBillingId(billingId);
+    setPaymentDialogOpen(true);
+  };
 
   // ✅ عرض أثناء التحميل
   if (isLoading) {
@@ -56,8 +65,9 @@ const SubscriperReport = () => {
           <p><span className="text-gray-600">البريد الإلكتروني:</span> {data.subscriper.email}</p>
           <p><span className="text-gray-600">رقم الهاتف:</span> {data.subscriper.phone}</p>
           <p><span className="text-gray-600">نوع الاشتراك:</span> {data.subscriper.type === "monthly" ? "شهري" : "أسبوعي"}</p>
-          <p className="font-semibold text-green-600">المبلغ المستحق: {data.subscriper.totalPrice} ش</p>
+          <p className="font-semibold text-red-600">المبلغ المستحق: {data.subscriper.subscriperTotalAmount} ش</p>
         </Card>
+        
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold">الفواتير</h2>
@@ -78,10 +88,39 @@ const SubscriperReport = () => {
                       <p className={`text-sm ${billing.isPaid ? "text-green-600" : "text-red-500"}`}>
                         {billing.isPaid ? "مدفوعة" : "غير مدفوعة"}
                       </p>
+                      <div className="flex items-center gap-3">
+                        <p className="text-sm text-green-700 font-semibold">
+                          الإجمالي: {billing.totalAmount} ش
+                        </p>
+                        <span className="text-black/40">|</span>
+                        <p className="text-sm text-green-700 font-semibold">
+                          المدفوع: {billing.paidAmount} ش
+                        </p>
 
-                      <p className="text-sm text-green-700 font-semibold">
-                        الإجمالي: {billing.totalPrice} ش
-                      </p>
+                         {
+                           !billing.isPaid && (
+                            <>
+                              <span className="text-black/40">|</span>
+                              <p className="text-sm text-red-700 font-semibold">
+                                المتبقي: {billing.totalAmount - billing.paidAmount} ش
+                              </p>
+                            </>
+                            )
+                          }
+                      </div>
+                      {!billing.isPaid&&(<Button
+                          className="mb-2 mt-3"
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenPaymentDialog(billing.id)
+                          }}
+                        >
+                          تسديد
+                        </Button>
+                        )
+                      }
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="p-4 bg-gray-50 space-y-3">
@@ -113,6 +152,17 @@ const SubscriperReport = () => {
           )}
         </div>
       </div>
+      {/* payment dialog */}
+      <BillingPaymentDialog
+        open={paymentDialogOpen}
+        onOpenChange={setPaymentDialogOpen}
+        paymentBillingId={paymentBillingId}
+        onSuccess={()=>{
+          queryClient.invalidateQueries({
+            queryKey: [`subscriper-${id}-report`]
+          });
+        }}
+      />
       <SessionOrdersDialog
         open={showOrdersDialog}
         onClose={() => setShowOrdersDialog(false)}

@@ -33,7 +33,7 @@ export interface Subscriper {
 
 export interface SubscriperReport extends Subscriper{
   billings:Billing[],
-  totalPrice:number
+  subscriperTotalAmount:number
 }
 
 export interface SubscriperReportResponse{
@@ -48,7 +48,8 @@ export interface Billing{
   type: 'weekly' | 'monthly';
   isPaid: boolean;
   sessions?:Session[];
-  totalPrice?:number;
+  totalAmount:number;
+  paidAmount:number;
 }
 
 export interface Supplier {

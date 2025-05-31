@@ -30,3 +30,11 @@ export const fetchSubscriperReport= async (id: number) => {
   console.log(res.data)
   return res.data;
 };
+
+export const billingPayment = async (billingPayment:{billingId:number,amount:number}) => {
+  const res=await authAxios.post(`/billing/payment`,billingPayment);
+  console.log(res.data)
+  return res.data;
+};
+
+
