@@ -10,6 +10,7 @@ import {
   Settings,
   Plus,
   LogOut,
+  Wallet,
   X
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,6 +21,7 @@ const navItems = [
   { title: "مخزون البطاقات", icon: <CreditCard size={20} />, path: "/card-inventory" },
   { title: "شركات الإمداد", icon: <Plus size={20} />, path: "/suppliers" },
   { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscripers" },
+  { title: "الإيرادات", icon: <Wallet size={20} />, path: "/revenues" },
   { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
   { title: "نقطة البيع", icon: <ShoppingCart size={20} />, path: "/pos" },
   { title: "التقارير", icon: <BarChart size={20} />, path: "/reports" },

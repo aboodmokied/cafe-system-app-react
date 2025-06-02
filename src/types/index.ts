@@ -88,6 +88,29 @@ export interface OtherOrder{
   // price:number;
 }
 
+
+export interface Revenue{
+  id:number;
+  type:'GUEST'|'SUBSCRIPER'|'POINT';
+  amount:number;
+  date:Date
+  userId?:number;
+  subscriperRevenue?:SubscriperRevenue;
+  guestRevenue?:GuestRevenue;
+}
+
+export interface SubscriperRevenue{
+  type:'SUBSCRIPER';
+  subscriperId:number,
+  billingId:number,
+}
+
+export interface GuestRevenue{
+  username:string;
+  sessionId:number;
+}
+
+
 export interface AddOtherOrderPayload{
   sessionId:number;
   type:'OTHER';
@@ -147,7 +170,18 @@ export interface FetchSuppliersResponse{
 export interface FetchSupscripersResponse{
   subscripers:Subscriper[]
 }
+export interface FetchRevenuesResponse{
+  revenues:Revenue[];
+  totalAmount:number,
+  startDate:string,
+  endDate:string
+}
 
+
+export interface FetchRevenuesPayload{
+  startDate:Date;
+  endDate?:Date;
+}
 
 export interface CreateCardPayload{
   label:string;

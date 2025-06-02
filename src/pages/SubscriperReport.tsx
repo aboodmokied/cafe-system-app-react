@@ -79,6 +79,7 @@ const SubscriperReport = () => {
                 <AccordionItem key={billing.id} value={`billing-${billing.id}`} className="border rounded-lg">
                   <AccordionTrigger className="p-4 justify-between text-right">
                     <div>
+                      <p className="font-bold mb-1">{billing.id}#</p>
                       <p className="font-medium">
                         الفاتورة من{" "}
                         {new Date(billing.startDate).toLocaleDateString()} إلى{" "}

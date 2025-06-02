@@ -16,6 +16,7 @@ import { AuthProvider } from "./auth/AuthContext";
 import Suppliers from "./pages/Suppliers";
 import Subscripers from "./pages/Subscripers";
 import SubscriperReport from "./pages/SubscriperReport";
+import Revenues from "./pages/Revenues";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
               }
             />
             <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
+            <Route path="/revenues" element={<RequireAuth><Revenues /></RequireAuth>} />
             <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Reports /></RequireAuth>} />
             <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
