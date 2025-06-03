@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { fetchRevenueReport } from "@/api/revenues.api";
 import { FetchRevenuesPayload, Revenue } from "@/types";
+import { formatForDateTimeLocal } from "@/utils/formatForDateTimeLocal ";
 
 
 const Revenues = () => {
@@ -30,40 +31,40 @@ const Revenues = () => {
   useEffect(() => {
     const now = new Date();
 
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0); // Beginning of today
+  const start = new Date(now);
+  start.setHours(0, 0, 0, 0);
 
-    const end = new Date(now);
-    end.setHours(23, 59, 59, 999); // End of today
+  const end = new Date(now);
+  end.setHours(23, 59, 59, 999);
 
-    setStartDate(start.toISOString().slice(0, 16));
-    setEndDate(end.toISOString().slice(0, 16));
+  setStartDate(formatForDateTimeLocal(start));
+  setEndDate(formatForDateTimeLocal(end));
   }, []);
 
   const onTabChange=(newTab:string)=>{
-    const now = new Date();
+   const now = new Date();
 
-    if (newTab === "daily") {
-      const start = new Date(now);
-      start.setHours(0, 0, 0, 0); // بداية اليوم
+  if (newTab === "daily") {
+    const start = new Date(now);
+    start.setHours(0, 0, 0, 0);
 
-      const end = new Date(now);
-      end.setHours(23, 59, 59, 999); // نهاية اليوم
+    const end = new Date(now);
+    end.setHours(23, 59, 59, 999);
 
-      setStartDate(start.toISOString().slice(0, 16)); // format for datetime-local
-      setEndDate(end.toISOString().slice(0, 16));
-    } else if (newTab === "monthly") {
-      const start = new Date(now.getFullYear(), now.getMonth(), 1); // بداية الشهر
-      start.setHours(0, 0, 0, 0);
+    setStartDate(formatForDateTimeLocal(start));
+    setEndDate(formatForDateTimeLocal(end));
+  } else if (newTab === "monthly") {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    start.setHours(0, 0, 0, 0);
 
-      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0); // آخر يوم في الشهر
-      end.setHours(23, 59, 59, 999);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    end.setHours(23, 59, 59, 999);
 
-      setStartDate(start.toISOString().slice(0, 16)); // لـ datetime-local input
-      setEndDate(end.toISOString().slice(0, 16));
-    }
+    setStartDate(formatForDateTimeLocal(start));
+    setEndDate(formatForDateTimeLocal(end));
+  }
 
-    setTab(newTab);
+  setTab(newTab);
   }  
 
   return (
@@ -78,7 +79,10 @@ const Revenues = () => {
             <input
               type="datetime-local"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => {
+                setTab("");
+                setStartDate(e.target.value);
+              }}
               className="w-full border rounded-md px-3 py-2"
             />
           </div>
@@ -87,7 +91,10 @@ const Revenues = () => {
             <input
               type="datetime-local"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e) => {
+                setTab("");
+                setEndDate(e.target.value);
+              }}
               className="w-full border rounded-md px-3 py-2"
             />
           </div>
@@ -102,16 +109,12 @@ const Revenues = () => {
               {` من ${format(new Date(data.startDate), "yyyy-MM-dd, HH:mm")}`}{" "}
               {`إلى ${format(new Date(data.endDate), "yyyy-MM-dd, HH:mm")}`}
             </p>
-          </div>
-        )}
-
-        {(!isLoading && !isError && data?.totalAmount > 0) && (
-          <div className="bg-green-100 text-green-700 border border-green-300 p-4 rounded-md text-sm text-right">
-            <p>
-              إجمالي الإيرادات: <span className="font-bold">{data.totalAmount} ش</span>
+            <p className="mt-1">
+              إجمالي الإيرادات: <span className="font-bold">{data?.totalAmount || 'غير معروف'} ش</span>
             </p>
           </div>
         )}
+
         <Tabs value={tab} onValueChange={onTabChange}>
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="monthly">الشهر الحالي</TabsTrigger>
