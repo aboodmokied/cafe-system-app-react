@@ -24,6 +24,7 @@ const navItems = [
   { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscripers" },
   { title: "الإيرادات", icon: <DollarSign size={20} />, path: "/revenues" },
   { title: "المصروفات", icon: <Wallet size={20} />, path: "/expenses" },
+  { title: "فواتير للتحصيل", icon: <Wallet size={20} />, path: "/collection-billings" },
   { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
   { title: "نقطة البيع", icon: <ShoppingCart size={20} />, path: "/pos" },
   { title: "التقارير", icon: <BarChart size={20} />, path: "/reports" },

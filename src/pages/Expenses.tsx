@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { formatForDateTimeLocal } from "@/utils/formatForDateTimeLocal";
-import { Expenses as ExpensesType } from "@/types"; // Define the Expense type
+import { Expenses as ExpensesType } from "@/types";
 import { fetchExpensesReport } from "@/api/expenses.api";
 
 const Expenses = () => {

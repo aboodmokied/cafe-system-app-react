@@ -50,6 +50,7 @@ export interface Billing{
   sessions?:Session[];
   totalAmount:number;
   paidAmount:number;
+  subscriper?:Subscriper
 }
 
 export interface Supplier {
