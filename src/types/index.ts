@@ -58,6 +58,25 @@ export interface Supplier {
   phone:string;
 }
 
+export interface SupplierBilling {
+  id: number;
+  date: string;
+  isPaid: boolean;
+  totalAmount: number;
+  paidAmount: number;
+  cardsCount: number;
+  card: Card;
+}
+
+export interface SupplierReport extends Supplier{
+  supplierBillings:SupplierBilling[],
+  supplierTotalAmount:number
+}
+
+export interface SupplierReportResponse{
+  supplier:SupplierReport;
+}
+
 export interface Order {
   id: number;
   sessionId: number;
@@ -109,6 +128,9 @@ export interface GuestRevenue{
   username:string;
   sessionId:number;
 }
+
+
+
 
 
 export interface AddOtherOrderPayload{

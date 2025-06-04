@@ -17,6 +17,7 @@ import Suppliers from "./pages/Suppliers";
 import Subscripers from "./pages/Subscripers";
 import SubscriperReport from "./pages/SubscriperReport";
 import Revenues from "./pages/Revenues";
+import SupplierReport from "./pages/SupplierReport";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,14 @@ const App = () => (
             <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Reports /></RequireAuth>} />
             <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
+            <Route
+              path="/suppliers/:id/report"
+              element={
+                <RequireAuth>
+                  <SupplierReport />
+                </RequireAuth>
+              }
+            />
             <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
             
             {/* صفحة غير موجودة */}

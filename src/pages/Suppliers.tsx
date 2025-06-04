@@ -10,6 +10,7 @@ import Layout from "@/components/layout/Layout";
 import { PlusCircle } from "lucide-react";
 import { addNewSupplier, fetchSuppliers } from "@/api/supplier.api";
 import { Supplier } from "@/types";
+import { Link } from "react-router-dom";
 
 const Suppliers = () => {
   const queryClient = useQueryClient();
@@ -77,7 +78,7 @@ const Suppliers = () => {
               size="sm"
               className="mt-2"
             >
-              عرض التقارير
+              <Link to={`/suppliers/${supplier.id}/report`}>عرض التقرير</Link>            
             </Button>
           </li>
         ))}

@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchSubscriperReport } from "@/api/subscriper.api";
 import SessionOrdersDialog from "@/components/sessions/SessionOrdersDialog";
 import { BillingPaymentDialog } from "@/components/subscripers/BillingPaymentDialog";
+import { format } from "date-fns";
 
 const SubscriperReport = () => {
   const [paymentBillingId, setPaymentBillingId] = useState<number | null>(null);
@@ -77,13 +78,23 @@ const SubscriperReport = () => {
             <Accordion type="multiple" className="space-y-4">
               {data.subscriper.billings.map((billing: Billing) => (
                 <AccordionItem key={billing.id} value={`billing-${billing.id}`} className="border rounded-lg">
+                  {!billing.isPaid && new Date(billing.endDate) < new Date() && (
+                    <div className="bg-red-100 text-red-700 font-bold text-sm px-4 py-2 rounded-t-lg text-left">
+                      🔺 مطلوب الدفع
+                    </div>
+                  )}
+                  {billing.isPaid && (
+                    <div className="bg-green-100 text-green-700 font-bold text-sm px-4 py-2 rounded-t-lg text-left">
+                      🟢 تم الدفع
+                    </div>
+                  )}
                   <AccordionTrigger className="p-4 justify-between text-right">
                     <div>
                       <p className="font-bold mb-1">{billing.id}#</p>
                       <p className="font-medium">
                         الفاتورة من{" "}
-                        {new Date(billing.startDate).toLocaleDateString()} إلى{" "}
-                        {new Date(billing.endDate).toLocaleDateString()}
+                        {format(new Date(billing.startDate), "yyyy-MM-dd, HH:mm")} إلى{" "}
+                        {format(new Date(billing.endDate), "yyyy-MM-dd, HH:mm")}
                       </p>
 
                       <p className={`text-sm ${billing.isPaid ? "text-green-600" : "text-red-500"}`}>
