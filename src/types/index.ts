@@ -68,6 +68,21 @@ export interface SupplierBilling {
   card: Card;
 }
 
+export interface Expenses{
+  id: number;
+  type: "SUPPLIER";
+  userId: number;
+  amount: number;
+  date: string;
+  supplierExpenses?:SupplierExpenses;
+}
+
+export interface SupplierExpenses{
+  id: number;
+  supplierId: number;
+  supplierBillingId: number;
+}
+
 export interface SupplierReport extends Supplier{
   supplierBillings:SupplierBilling[],
   supplierTotalAmount:number
@@ -198,9 +213,20 @@ export interface FetchRevenuesResponse{
   startDate:string,
   endDate:string
 }
+export interface FetchExpensesResponse{
+  expenses:Expenses[];
+  totalAmount:number,
+  startDate:string,
+  endDate:string
+}
 
 
 export interface FetchRevenuesPayload{
+  startDate:Date;
+  endDate?:Date;
+}
+
+export interface FetchExpensesPayload{
   startDate:Date;
   endDate?:Date;
 }

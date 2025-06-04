@@ -18,6 +18,7 @@ import Subscripers from "./pages/Subscripers";
 import SubscriperReport from "./pages/SubscriperReport";
 import Revenues from "./pages/Revenues";
 import SupplierReport from "./pages/SupplierReport";
+import Expenses from "./pages/Expenses";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
             />
             <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
             <Route path="/revenues" element={<RequireAuth><Revenues /></RequireAuth>} />
+            <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
             <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Reports /></RequireAuth>} />
             <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
