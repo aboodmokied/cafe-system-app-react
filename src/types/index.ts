@@ -59,6 +59,21 @@ export interface Supplier {
   phone:string;
 }
 
+export interface SalesPoint {
+  id:number;
+  name:string;
+  phone:string;
+}
+
+export interface PointBilling {
+  id: number;
+  date: string;
+  isPaid: boolean;
+  totalAmount: number;
+  paidAmount: number;
+  cardsCount: number;
+  card: Card;
+}
 export interface SupplierBilling {
   id: number;
   date: string;
@@ -91,6 +106,14 @@ export interface SupplierReport extends Supplier{
 
 export interface SupplierReportResponse{
   supplier:SupplierReport;
+}
+
+export interface SalesPointReport extends SalesPoint{
+  pointBillings:PointBilling[],
+  pointTotalAmount:number
+}
+export interface SalesPointReportResponse{
+  salesPoint:SalesPointReport;
 }
 
 export interface Order {
@@ -179,6 +202,14 @@ export interface AddToStockCardPayload{
   paidPrice: number;
 }
 
+export interface RemoveFromStockCardPayload{
+  cardId:number;
+  pointId:number;
+  qty:number;
+  totalPrice:number;
+  paidPrice: number;
+}
+
 
 
 export interface LoginResponse {
@@ -204,6 +235,9 @@ export interface FetchCardsResponse{
 }
 export interface FetchSuppliersResponse{
   suppliers:Supplier[]
+}
+export interface FetchSalesPointsResponse{
+  salesPoints:SalesPoint[]
 }
 export interface FetchSupscripersResponse{
   subscripers:Subscriper[]
@@ -259,6 +293,11 @@ export interface CreateSubscriperSessionPayload{
 }
 
 export interface CreateSupplierPayload{
+  name:string;
+  phone:string;
+}
+
+export interface CreateSalesPointPayload{
   name:string;
   phone:string;
 }

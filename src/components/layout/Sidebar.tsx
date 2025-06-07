@@ -21,6 +21,7 @@ const navItems = [
   { title: "الرئيسية", icon: <Home size={20} />, path: "/" },
   { title: "مخزون البطاقات", icon: <CreditCard size={20} />, path: "/card-inventory" },
   { title: "شركات الإمداد", icon: <Plus size={20} />, path: "/suppliers" },
+  { title: "نقاط البيع", icon: <Plus size={20} />, path: "/sales-points" },
   { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscripers" },
   { title: "الإيرادات", icon: <DollarSign size={20} />, path: "/revenues" },
   { title: "المصروفات", icon: <Wallet size={20} />, path: "/expenses" },
