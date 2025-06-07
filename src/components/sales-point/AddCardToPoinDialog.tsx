@@ -44,8 +44,8 @@ const AddCardToPoinDialog: React.FC<AddCardToPoinDialogProps> = ({ open, onOpenC
       setPaidPrice("");
       onOpenChange(false);
     },
-    onError: () => {
-      setErrorMsg("فشل في إضافة البيانات. تأكد من إدخال معلومات صحيحة.");
+    onError: (err:any) => {
+      setErrorMsg(err.response?.data?.message[0] || err?.message || 'فشل في العملية');
     },
   });
 
