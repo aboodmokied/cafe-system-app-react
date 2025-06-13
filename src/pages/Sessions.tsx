@@ -20,18 +20,15 @@ import { fetchSessions, openNewSession } from "@/api/sessions.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Session } from "@/types";
 import { Loader2 } from "lucide-react"; // For spinner icon
+import Pagination from "@/components/layout/Pagination";
 
-interface Order {
-  type: string;
-  price: number;
-}
 
 const SessionsPage = () => {
-  
-
+  const [page, setPage] = useState(1);
+  const limit = 1;
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['sessions'],
-    queryFn: fetchSessions
+    queryKey: ['sessions',page],
+    queryFn: ()=>fetchSessions(page,limit)
   });
 
   
@@ -53,12 +50,6 @@ const SessionsPage = () => {
     // implementation coming soon
   };
 
-  const updateSessionOrders = (sessionId: string, newOrders: Order[]) => {
-    // implementation coming soon
-  };
-
-  const totalDue = (orders: Order[]) =>
-    orders.reduce((acc, o) => acc + o.price, 0);
 
   const selectedSession = data?.sessions.find((s) => s.id === selectedSessionId);
 
@@ -86,8 +77,8 @@ const SessionsPage = () => {
     );
   }
 
-  const openSessions = data.sessions.filter((s) => s.isActive);
-  const closedSessions = data.sessions.filter((s) => !s.isActive);
+  // const openSessions = data.sessions.filter((s) => s.isActive);
+  // const closedSessions = data.sessions.filter((s) => !s.isActive);
 
   return (
     <Layout>
@@ -97,14 +88,14 @@ const SessionsPage = () => {
           <h1 className="text-2xl font-bold">الجلسات</h1>
         </div>
 
-        <Tabs defaultValue="open" className="space-y-4">
+        <Tabs defaultValue="all" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="open">مفتوحة ({openSessions.length})</TabsTrigger>
-            <TabsTrigger value="closed">مغلقة ({closedSessions.length})</TabsTrigger>
+            <TabsTrigger value="open">مفتوحة</TabsTrigger>
+            <TabsTrigger value="closed">مغلقة</TabsTrigger>
             <TabsTrigger value="all">الكل</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="open" className="space-y-4">
+          {/* <TabsContent value="open" className="space-y-4">
             {openSessions.map((session) => (
               <SessionCard
                 key={session.id}
@@ -123,7 +114,7 @@ const SessionsPage = () => {
                 onViewOrders={() => openOrders(session.id)}
               />
             ))}
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="all" className="space-y-4">
             {data.sessions.map((session) => (
@@ -140,7 +131,11 @@ const SessionsPage = () => {
         </Tabs>
       </div>
 
-      
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={data.pagination}
+      />    
       {selectedSession && (
         <OrdersDialog
           open={ordersDialogOpen}

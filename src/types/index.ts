@@ -236,7 +236,8 @@ export interface LoginResponse {
 
 
 export interface FetchSessionsResponse{
-  sessions:Session[]
+  sessions:Session[],
+  pagination:Pagination
 }
 
 
