@@ -8,25 +8,26 @@ import { format } from "date-fns";
 import { formatForDateTimeLocal } from "@/utils/formatForDateTimeLocal";
 import { Expenses as ExpensesType } from "@/types";
 import { fetchExpensesReport } from "@/api/expenses.api";
+import Pagination from "@/components/layout/Pagination";
 
 const Expenses = () => {
   const [tab, setTab] = useState("daily");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
+  const [page, setPage] = useState(1);
+  const limit = 20;
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["expenses", { startDate, endDate }],
+    queryKey: ["expenses", { startDate, endDate },page],
     queryFn: () => {
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate) : null;
-
-      return fetchExpensesReport({ startDate: start, endDate: end });
+      return fetchExpensesReport({ startDate: start, endDate: end },page,limit);
     },
   });
 
   useEffect(() => {
     const now = new Date();
-
+    
     const start = new Date(now);
     start.setHours(0, 0, 0, 0);
 
@@ -39,7 +40,7 @@ const Expenses = () => {
 
   const onTabChange = (newTab: string) => {
     const now = new Date();
-
+    setPage(1);
     if (newTab === "daily") {
       const start = new Date(now);
       start.setHours(0, 0, 0, 0);
@@ -63,6 +64,14 @@ const Expenses = () => {
     setTab(newTab);
   };
 
+  if (isLoading) {
+    return <Layout><div className="text-center py-10">جاري التحميل...</div></Layout>;
+  }
+  
+  if (isError || !data) {
+    return <Layout><div className="text-center py-10 text-red-600">حدث خطأ في تحميل البيانات.</div></Layout>;
+  }
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -78,6 +87,7 @@ const Expenses = () => {
               value={startDate}
               onChange={(e) => {
                 setTab("");
+                setPage(1);
                 setStartDate(e.target.value);
               }}
               className="w-full border rounded-md px-3 py-2"
@@ -90,14 +100,15 @@ const Expenses = () => {
               value={endDate}
               onChange={(e) => {
                 setTab("");
+                setPage(1);
                 setEndDate(e.target.value);
               }}
               className="w-full border rounded-md px-3 py-2"
             />
           </div>
-          <div className="flex items-end">
+          {/* <div className="flex items-end">
             <Button className="w-full">عرض التقرير</Button>
-          </div>
+          </div> */}
         </div>
 
         {(!isError && !isLoading && data?.startDate && data?.endDate) && (
@@ -150,6 +161,11 @@ const Expenses = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <Pagination 
+        page={page}
+        setPage={setPage}
+        pagination={data.pagination}
+      />
     </Layout>
   );
 };

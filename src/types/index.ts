@@ -38,6 +38,7 @@ export interface SubscriperReport extends Subscriper{
 
 export interface SubscriperReportResponse{
   subscriper:SubscriperReport;
+  pagination:Pagination
 }
 
 export interface Billing{
@@ -53,6 +54,18 @@ export interface Billing{
   subscriper?:Subscriper
 }
 
+export interface PointBilling{
+  id:number;
+  pointId:number;
+  date:Date;
+  isPaid: boolean;
+  totalAmount:number;
+  paidAmount:number;
+  salesPoint?:SalesPoint;
+  cardsCount: number;
+  card: Card;
+}
+
 export interface Supplier {
   id:number;
   name:string;
@@ -65,18 +78,20 @@ export interface SalesPoint {
   phone:string;
 }
 
-export interface PointBilling {
-  id: number;
-  date: string;
-  isPaid: boolean;
-  totalAmount: number;
-  paidAmount: number;
-  cardsCount: number;
-  card: Card;
-}
+// export interface PointBilling {
+//   id: number;
+//   date: string;
+//   isPaid: boolean;
+//   totalAmount: number;
+//   paidAmount: number;
+//   cardsCount: number;
+//   card: Card;
+// }
 export interface SupplierBilling {
   id: number;
-  date: string;
+  date: Date;
+  supplierId:number;
+  supplier:Supplier;
   isPaid: boolean;
   totalAmount: number;
   paidAmount: number;
@@ -106,6 +121,7 @@ export interface SupplierReport extends Supplier{
 
 export interface SupplierReportResponse{
   supplier:SupplierReport;
+  pagination:Pagination
 }
 
 export interface SalesPointReport extends SalesPoint{
@@ -114,6 +130,7 @@ export interface SalesPointReport extends SalesPoint{
 }
 export interface SalesPointReportResponse{
   salesPoint:SalesPointReport;
+  pagination:Pagination
 }
 
 export interface Order {
@@ -234,16 +251,26 @@ export interface FetchCardsResponse{
   cards:Card[]
 }
 export interface FetchSuppliersResponse{
-  suppliers:Supplier[]
+  suppliers:Supplier[],
+  pagination:Pagination
+}
+interface Pagination{
+  page:number,
+  limit:number,
+  totalPages:number,
 }
 export interface FetchSalesPointsResponse{
-  salesPoints:SalesPoint[]
+  salesPoints:SalesPoint[],
+  pagination:Pagination
+  
 }
 export interface FetchSupscripersResponse{
-  subscripers:Subscriper[]
+  subscripers:Subscriper[],
+  pagination:Pagination
 }
 export interface FetchRevenuesResponse{
   revenues:Revenue[];
+  pagination:Pagination
   totalAmount:number,
   startDate:string,
   endDate:string
@@ -252,7 +279,8 @@ export interface FetchExpensesResponse{
   expenses:Expenses[];
   totalAmount:number,
   startDate:string,
-  endDate:string
+  endDate:string,
+  pagination:Pagination
 }
 
 

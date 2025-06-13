@@ -5,8 +5,10 @@ import authAxios from "./authAxios";
 
 
 
-export const fetchSubscribers = async () => {
-  const res=await authAxios.get<FetchSupscripersResponse>(`/subscriper`);
+export const fetchSubscribers = async (page:number,limit:number) => {
+  const res=await authAxios.get<FetchSupscripersResponse>(`/subscriper`,{
+    params: { page, limit }
+  });
   console.log(res.data)
   return res.data;
 };
@@ -25,8 +27,10 @@ export const fetchSubscriberByName = async (username: string) => {
 
 
 
-export const fetchSubscriperReport= async (id: number) => {
-  const res=await authAxios.get<SubscriperReportResponse>(`/subscriper/${id}/report`);
+export const fetchSubscriperReport= async (id: number,page:number,limit:number) => {
+  const res=await authAxios.get<SubscriperReportResponse>(`/subscriper/${id}/report`,{
+    params: { page, limit }
+  });
   console.log(res.data)
   return res.data;
 };

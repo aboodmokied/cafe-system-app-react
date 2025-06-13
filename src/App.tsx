@@ -22,6 +22,8 @@ import Expenses from "./pages/Expenses";
 import CollectionBillings from "./pages/CollectionBillings";
 import SalesPoints from "./pages/SalesPoints";
 import SalesPointReport from "./pages/SalesPointReport";
+import PoinCollectionBillings from "./pages/PointCollectionBilling";
+import SupplierCollectionBillings from "./pages/SupplierCollectionBillings";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,8 @@ const App = () => (
             />
             <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
             <Route path="/collection-billings" element={<RequireAuth><CollectionBillings /></RequireAuth>} />
+            <Route path="/poin-collection-billings" element={<RequireAuth><PoinCollectionBillings /></RequireAuth>} />
+            <Route path="/supplier-collection-billings" element={<RequireAuth><SupplierCollectionBillings /></RequireAuth>} />
             <Route path="/revenues" element={<RequireAuth><Revenues /></RequireAuth>} />
             <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
             <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />

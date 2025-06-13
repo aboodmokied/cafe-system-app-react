@@ -11,6 +11,7 @@ import { SalesPoint } from "@/types";
 import { Link } from "react-router-dom";
 import { addNewSalesPoint, fetchSalesPoints } from "@/api/point.api";
 import AddCardToPoinDialog from "@/components/sales-point/AddCardToPoinDialog";
+import Pagination from "@/components/layout/Pagination";
 
 const SalesPoints = () => {
   const queryClient = useQueryClient();
@@ -20,11 +21,12 @@ const SalesPoints = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [selectedPointId, setSelectedPointId] = useState<number | null>(null);
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 1;
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["salesPoints"],
-    queryFn: fetchSalesPoints,
-    initialData: { salesPoints: [] },
+    queryKey: ["salesPoints",page],
+    queryFn: ()=>fetchSalesPoints(page,limit),
   });
 
   const mutation = useMutation({
@@ -53,20 +55,43 @@ const SalesPoints = () => {
     mutation.mutate({ name, phone });
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="text-center py-10 text-blue-600 font-semibold">جاري تحميل التقرير...</div>
+      </Layout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Layout>
+        <div className="text-center py-10 text-red-600 font-semibold">
+          حدث خطأ أثناء تحميل البيانات
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <Button onClick={() => setOpen(true)}>
-            <PlusCircle size={16} />
-            إضافة نقطة بيع جديدة
-          </Button>
+          <div className="flex gap-2 items-center">
+            <Button onClick={() => setOpen(true)}>
+              <PlusCircle size={16} />
+              إضافة نقطة بيع جديدة
+            </Button>
+            <Link to='/poin-collection-billings'>
+              <Button className="bg-red-500 hover:bg-red-300">
+                  عرض فواتير تحتاج للتحصيل
+              </Button>
+            </Link>
+          </div>
+          
           <h1 className="text-2xl font-bold">نقاط البيع</h1>
         </div>
-
-        {isLoading && <p>جاري التحميل...</p>}
-        {isError && <p className="text-red-500">حدث خطأ أثناء جلب نقاط البيع.</p>}
-
+        
         <ul className="space-y-2">
           {data.salesPoints.map((point: SalesPoint) => (
             <li key={point.id} className="border p-3 rounded flex flex-col md:flex-row md:items-center md:justify-between gap-2">
@@ -76,6 +101,7 @@ const SalesPoints = () => {
               </div>
               <div className="flex gap-2">
                 <Button
+                  className="bg-green-500 text-white hover:bg-green-300"
                   size="sm"
                   variant="secondary"
                   onClick={() => {
@@ -83,7 +109,7 @@ const SalesPoints = () => {
                     setCardDialogOpen(true);
                   }}
                 >
-                  أضف بطاقات
+                  بيع بطاقات
                 </Button>
                 <Link to={`/sales-points/${point.id}/report`}>
                   <Button variant="outline" size="sm">عرض التقرير</Button>
@@ -128,7 +154,12 @@ const SalesPoints = () => {
           </DialogContent>
         </Dialog>
       </div>
-
+      {/* pagination controll */}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={data.pagination}
+      />      
       {selectedPointId !== null && (
         <AddCardToPoinDialog
           open={cardDialogOpen}

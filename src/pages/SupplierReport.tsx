@@ -9,6 +9,7 @@ import { fetchSupplierReport } from "@/api/supplier.api"; // تأكد من إن�
 import { SupplierBilling } from "@/types"; // تأكد من تعريف النوع الصحيح
 import { format } from "date-fns";
 import { SupplierBillingPaymentDialog } from "@/components/suppliers/SupplierBillingPaymentDialog";
+import Pagination from "@/components/layout/Pagination";
 // import { BillingPaymentDialog } from "@/components/suppliers/BillingPaymentDialog";
 
 const SupplierReport = () => {
@@ -16,12 +17,14 @@ const SupplierReport = () => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
+  const [page, setPage] = useState(1);
+  const limit = 1;
 
   if (!id) return <div className="text-red-500">لا يوجد معرف مورد.</div>;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: [`supplier-${id}-report`],
-    queryFn: () => fetchSupplierReport(+id),
+    queryKey: [`supplier-${id}-report`,page],
+    queryFn: () => fetchSupplierReport(+id,page,limit),
   });
 
   const handleOpenPaymentDialog = (billingId: number) => {
@@ -48,7 +51,7 @@ const SupplierReport = () => {
     );
   }
 
-  const { supplier } = data;
+  const { supplier,pagination } = data;
 
   return (
     <Layout>
@@ -120,6 +123,12 @@ const SupplierReport = () => {
         </div>
       </div>
 
+      {/* pagination controll */}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={pagination}
+      />  
       {/* payment dialog */}
       <SupplierBillingPaymentDialog
         open={paymentDialogOpen}

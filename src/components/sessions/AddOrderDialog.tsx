@@ -45,6 +45,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
   const [title, setTitle] = useState("");
   const [cardId, setCardId] = useState("");
   // const [duration, setDuration] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
 
   const mutation = useMutation({
     mutationFn: createOrder,
@@ -52,7 +53,18 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       queryClient.invalidateQueries({
         queryKey: [`session-${sessionId}-orders`]
       });
-    }
+      onOpenChange(false);
+    },
+    onError: (error: any) => {
+      if (
+        error.response?.status === 400 &&
+        Array.isArray(error.response.data.message)
+      ) {
+        setErrors(error.response.data.message);
+      } else {
+        setErrors(["حدث خطأ غير متوقع"]);
+      }
+    },
   });
 
   const {
@@ -93,7 +105,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       return;
     }
 
-    onOpenChange(false);
   };
 
   return (
@@ -205,7 +216,14 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
             />
           </>
         )}
-
+        {/* عرض الأخطاء */}
+          {errors.length > 0 && (
+            <ul className="bg-red-100 border border-red-300 text-red-700 rounded p-3 text-sm space-y-1">
+              {errors.map((err, index) => (
+                <li key={index}>• {err}</li>
+              ))}
+            </ul>
+          )}
         <DialogFooter>
           <Button onClick={handleAdd}>إضافة</Button>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

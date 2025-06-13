@@ -19,16 +19,13 @@ import { useAuth } from "@/auth/AuthContext";
 
 const navItems = [
   { title: "الرئيسية", icon: <Home size={20} />, path: "/" },
+  { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
   { title: "مخزون البطاقات", icon: <CreditCard size={20} />, path: "/card-inventory" },
-  { title: "شركات الإمداد", icon: <Plus size={20} />, path: "/suppliers" },
-  { title: "نقاط البيع", icon: <Plus size={20} />, path: "/sales-points" },
   { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscripers" },
+  { title: "نقاط البيع", icon: <Plus size={20} />, path: "/sales-points" },
+  { title: "شركات الإمداد", icon: <ShoppingCart size={20} />, path: "/suppliers" },
   { title: "الإيرادات", icon: <DollarSign size={20} />, path: "/revenues" },
   { title: "المصروفات", icon: <Wallet size={20} />, path: "/expenses" },
-  { title: "فواتير للتحصيل", icon: <Wallet size={20} />, path: "/collection-billings" },
-  { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
-  { title: "نقطة البيع", icon: <ShoppingCart size={20} />, path: "/pos" },
-  { title: "التقارير", icon: <BarChart size={20} />, path: "/reports" },
   { title: "الإعدادات", icon: <Settings size={20} />, path: "/settings" },
 ];
 

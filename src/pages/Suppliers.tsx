@@ -10,6 +10,7 @@ import { PlusCircle } from "lucide-react";
 import { addNewSupplier, fetchSuppliers } from "@/api/supplier.api";
 import { Supplier } from "@/types";
 import { Link } from "react-router-dom";
+import Pagination from "@/components/layout/Pagination";
 
 const Suppliers = () => {
   const queryClient = useQueryClient();
@@ -17,12 +18,12 @@ const Suppliers = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
-  
+  const [page, setPage] = useState(1);
+  const limit = 1;
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["suppliers"],
-    queryFn: fetchSuppliers,
-    initialData: { suppliers: [] },
+    queryKey: ["suppliers",page],
+    queryFn: ()=>fetchSuppliers(page,limit),
   });
 
   const mutation = useMutation({
@@ -51,19 +52,40 @@ const Suppliers = () => {
     mutation.mutate({ name, phone });
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="text-center py-10 text-blue-600 font-semibold">جاري تحميل البيانات...</div>
+      </Layout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Layout>
+        <div className="text-center py-10 text-red-600 font-semibold">
+          حدث خطأ أثناء تحميل البيانات
+        </div>
+      </Layout>
+    );
+  }
   return (
     <Layout>
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <Button onClick={() => setOpen(true)}>
-            <PlusCircle size={16} />
-            إضافة شركة جديدة
-        </Button>
+        <div className="flex gap-2 items-center">
+          <Button onClick={() => setOpen(true)}>
+              <PlusCircle size={16} />
+              إضافة شركة جديدة
+          </Button>
+          <Link to='/supplier-collection-billings'>
+            <Button className="bg-red-500 hover:bg-red-300">
+                عرض فواتير تحتاج للتحصيل
+            </Button>
+          </Link>
+        </div>
         <h1 className="text-2xl font-bold">شركات الإمداد</h1>
       </div>
-
-      {isLoading && <p>جاري التحميل...</p>}
-      {isError && <p className="text-red-500">حدث خطأ أثناء جلب الشركات.</p>}
 
       <ul className="space-y-2">
         {data.suppliers.map((supplier: Supplier) => (
@@ -118,6 +140,12 @@ const Suppliers = () => {
         </DialogContent>
       </Dialog>
     </div>
+    {/* pagination controll */}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={data.pagination}
+      />  
     </Layout>
   );
 };

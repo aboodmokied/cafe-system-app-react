@@ -8,19 +8,20 @@ import NewSubscriptionDialog from "@/components/subscripers/NewSubscriptionDialo
 import { useQuery } from "@tanstack/react-query";
 import { fetchSubscribers } from "@/api/subscriper.api";
 import { Link } from "react-router-dom";
+import Pagination from "@/components/layout/Pagination";
 
 type TabType = "all" | "weekly" | "monthly";
 
 const Subscripers = () => {
   const [activeTab, setActiveTab] = useState<TabType>("all");
-
+  const [page, setPage] = useState(1);
+  const limit = 1;
   const {
     data,
     isLoading,
     isError,
-    error,
   } = useQuery({
-    queryFn: fetchSubscribers,
+    queryFn: ()=>fetchSubscribers(page,limit),
     queryKey: ["subscripers"],
   });
 
@@ -31,11 +32,36 @@ const Subscripers = () => {
           activeTab === "monthly" ? sub.type === "monthly" : sub.type === "weekly"
         ) || [];
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="text-center py-10 text-blue-600 font-semibold">جاري تحميل التقرير...</div>
+      </Layout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Layout>
+        <div className="text-center py-10 text-red-600 font-semibold">
+          حدث خطأ أثناء تحميل البيانات
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="space-y-6 text-right">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <NewSubscriptionDialog />
+          <div className="flex gap-2 items-center">
+            <NewSubscriptionDialog />
+            <Link to='/collection-billings'>
+              <Button className="bg-red-500 hover:bg-red-300">
+                  عرض فواتير تحتاج للتحصيل
+              </Button>
+            </Link>
+          </div>
           <h1 className="text-2xl font-bold">الاشتراكات</h1>
         </div>
 
@@ -58,13 +84,10 @@ const Subscripers = () => {
           </TabsList>
 
           <TabsContent value={activeTab} className="space-y-4">
-            {isLoading && <p>جاري تحميل البيانات...</p>}
-            {isError && <p className="text-red-500">حدث خطأ: {(error as Error).message}</p>}
-            {!isLoading && !isError && filteredSubscriptions.length === 0 && (
+            { filteredSubscriptions.length === 0 ? (
               <p>لا توجد اشتراكات لعرضها</p>
-            )}
-
-            {!isLoading && !isError &&
+            )
+            : (
               filteredSubscriptions.map((subscription) => (
                 <Card key={subscription.id} className="p-4 text-right">
                   <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
@@ -94,10 +117,18 @@ const Subscripers = () => {
                     </div>
                   </div>
                 </Card>
-              ))}
+              ))
+            )
+              }
           </TabsContent>
         </Tabs>
       </div>
+      {/* pagination controll */}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={data.pagination}
+      />  
     </Layout>
   );
 };

@@ -9,18 +9,21 @@ import { format } from "date-fns";
 import { fetchSalesPointReport } from "@/api/point.api";
 import { PointBilling } from "@/types";
 import { SalesPointBillingPaymentDialog } from "@/components/sales-point/SalesPointBillingPaymentDialog";
+import Pagination from "@/components/layout/Pagination";
 
 const SalesPointReport = () => {
   const [paymentBillingId, setPaymentBillingId] = useState<number | null>(null);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 1;
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
 
   if (!id) return <div className="text-red-500">لا يوجد معرف نقطة بيع.</div>;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: [`sales-point-${id}-report`],
-    queryFn: () => fetchSalesPointReport(+id),
+    queryKey: [`sales-point-${id}-report`,page],
+    queryFn: () => fetchSalesPointReport(+id,page,limit),
   });
 
   const handleOpenPaymentDialog = (billingId: number) => {
@@ -118,7 +121,12 @@ const SalesPointReport = () => {
           )}
         </div>
       </div>
-
+      {/* pagination controll */}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={data.pagination}
+      />
       {/* payment dialog */}
       <SalesPointBillingPaymentDialog
         open={paymentDialogOpen}

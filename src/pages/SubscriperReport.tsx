@@ -12,6 +12,7 @@ import { fetchSubscriperReport } from "@/api/subscriper.api";
 import SessionOrdersDialog from "@/components/sessions/SessionOrdersDialog";
 import { BillingPaymentDialog } from "@/components/subscripers/BillingPaymentDialog";
 import { format } from "date-fns";
+import Pagination from "@/components/layout/Pagination";
 
 const SubscriperReport = () => {
   const [paymentBillingId, setPaymentBillingId] = useState<number | null>(null);
@@ -21,12 +22,13 @@ const SubscriperReport = () => {
   const [paymentDialogBillingId, setPaymentDialogBillingId] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
-
+  const [page, setPage] = useState(1);
+  const limit = 1;
   if (!id) return <div className="text-red-500">لا يوجد معرف مشترك.</div>;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: [`subscriper-${id}-report`],
-    queryFn: () => fetchSubscriperReport(+id),
+    queryKey: [`subscriper-${id}-report`,page],
+    queryFn: () => fetchSubscriperReport(+id,page,limit),
   });
 
   // When opening the dialog:
@@ -164,6 +166,13 @@ const SubscriperReport = () => {
           )}
         </div>
       </div>
+
+      {/* pagination controll */}
+        <Pagination
+          page={page}
+          setPage={setPage}
+          pagination={data.pagination}
+        />  
       {/* payment dialog */}
       <BillingPaymentDialog
         open={paymentDialogOpen}

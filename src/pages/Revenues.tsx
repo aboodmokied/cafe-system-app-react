@@ -8,28 +8,30 @@ import { format } from "date-fns";
 import { fetchRevenueReport } from "@/api/revenues.api";
 import { FetchRevenuesPayload, Revenue } from "@/types";
 import { formatForDateTimeLocal } from "@/utils/formatForDateTimeLocal";
+import Pagination from "@/components/layout/Pagination";
 
 
 const Revenues = () => {
   const [tab, setTab] = useState("daily");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
+  const [page, setPage] = useState(1);
+  const limit = 20;
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["revenues", { startDate, endDate }],
+    queryKey: ["revenues", { startDate, endDate },page],
     queryFn: () => {
       const start=startDate?new Date(startDate):null;
       const end=endDate?new Date(endDate):null;
       
       return fetchRevenueReport({
         startDate:start,
-        endDate:end
-      });
+        endDate:end,
+      },page,limit);
     },
   });
 
   useEffect(() => {
-    const now = new Date();
+  const now = new Date();
 
   const start = new Date(now);
   start.setHours(0, 0, 0, 0);
@@ -42,30 +44,38 @@ const Revenues = () => {
   }, []);
 
   const onTabChange=(newTab:string)=>{
-   const now = new Date();
+    const now = new Date();
+    setPage(1);
+    if (newTab === "daily") {
+      const start = new Date(now);
+      start.setHours(0, 0, 0, 0);
 
-  if (newTab === "daily") {
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
 
-    const end = new Date(now);
-    end.setHours(23, 59, 59, 999);
+      setStartDate(formatForDateTimeLocal(start));
+      setEndDate(formatForDateTimeLocal(end));
+    } else if (newTab === "monthly") {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      start.setHours(0, 0, 0, 0);
 
-    setStartDate(formatForDateTimeLocal(start));
-    setEndDate(formatForDateTimeLocal(end));
-  } else if (newTab === "monthly") {
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    start.setHours(0, 0, 0, 0);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      end.setHours(23, 59, 59, 999);
 
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    end.setHours(23, 59, 59, 999);
-
-    setStartDate(formatForDateTimeLocal(start));
-    setEndDate(formatForDateTimeLocal(end));
-  }
+      setStartDate(formatForDateTimeLocal(start));
+      setEndDate(formatForDateTimeLocal(end));
+    }
 
   setTab(newTab);
   }  
+
+  if (isLoading) {
+    return <Layout><div className="text-center py-10">جاري التحميل...</div></Layout>;
+  }
+
+  if (isError || !data) {
+    return <Layout><div className="text-center py-10 text-red-600">حدث خطأ في تحميل البيانات.</div></Layout>;
+  }
 
   return (
     <Layout>
@@ -81,6 +91,7 @@ const Revenues = () => {
               value={startDate}
               onChange={(e) => {
                 setTab("");
+                setPage(1);
                 setStartDate(e.target.value);
               }}
               className="w-full border rounded-md px-3 py-2"
@@ -93,14 +104,15 @@ const Revenues = () => {
               value={endDate}
               onChange={(e) => {
                 setTab("");
+                setPage(1);
                 setEndDate(e.target.value);
               }}
               className="w-full border rounded-md px-3 py-2"
             />
           </div>
-          <div className="flex items-end">
+          {/* <div className="flex items-end">
             <Button className="w-full">عرض التقرير</Button>
-          </div>
+          </div> */}
         </div>
         {(!isError && !isLoading && data?.startDate && data?.endDate) && (
           <div className="bg-gray-100 p-4 rounded-md text-sm text-gray-700 text-right border border-gray-200">
@@ -126,7 +138,7 @@ const Revenues = () => {
             {isLoading && <p>جاري تحميل البيانات...</p>}
             {isError && <p className="text-red-500">حدث خطأ: {(error as Error).message}</p>}
             {!isLoading && !isError && data?.revenues?.length === 0 && (
-              <p>لا توجد بيانات إيرادات</p>
+              <p className="text-right">لا توجد بيانات إيرادات</p>
             )}
 
             {!isLoading &&
@@ -155,6 +167,11 @@ const Revenues = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={data.pagination}
+      />
     </Layout>
   );
 };
