@@ -1,11 +1,12 @@
 import { CreateGuestSessionPayload, CreateSubscriperSessionPayload, FetchSessionsResponse, Session } from "@/types";
 import authAxios from "./authAxios";
 
-export const fetchSessions=async(page:number,limit:number)=>{
+export const fetchSessions=async(page:number,limit:number,status='open')=>{
     const res=await authAxios.get<FetchSessionsResponse>('session',{
       params:{
         page,
-        limit
+        limit,
+        status
       }
     });
     console.log(res.data);

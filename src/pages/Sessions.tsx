@@ -25,10 +25,12 @@ import Pagination from "@/components/layout/Pagination";
 
 const SessionsPage = () => {
   const [page, setPage] = useState(1);
+  const [status, setStatus] = useState('open');
   const limit = 1;
+
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['sessions',page],
-    queryFn: ()=>fetchSessions(page,limit)
+    queryKey: ['sessions',page,status],
+    queryFn: ()=>fetchSessions(page,limit,status)
   });
 
   
@@ -50,6 +52,11 @@ const SessionsPage = () => {
     // implementation coming soon
   };
 
+
+  const onTabChange=(newTab:string)=>{
+    setPage(1);
+    setStatus(newTab);
+  }
 
   const selectedSession = data?.sessions.find((s) => s.id === selectedSessionId);
 
@@ -88,7 +95,7 @@ const SessionsPage = () => {
           <h1 className="text-2xl font-bold">الجلسات</h1>
         </div>
 
-        <Tabs defaultValue="all" className="space-y-4">
+        <Tabs value={status} onValueChange={onTabChange} className="space-y-4">
           <TabsList>
             <TabsTrigger value="open">مفتوحة</TabsTrigger>
             <TabsTrigger value="closed">مغلقة</TabsTrigger>
@@ -116,7 +123,7 @@ const SessionsPage = () => {
             ))}
           </TabsContent> */}
 
-          <TabsContent value="all" className="space-y-4">
+          <TabsContent value={status} className="space-y-4">
             {data.sessions.map((session) => (
               <SessionCard
                 key={session.id}
