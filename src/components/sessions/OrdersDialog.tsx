@@ -11,9 +11,10 @@ import React, { useEffect, useState } from "react";
 import AddOrderDialog from "./AddOrderDialog";
 import { Order } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchOrders, stopChargingOrder } from "@/api/orders.api";
+import { deleteOrder, fetchOrders, stopChargingOrder } from "@/api/orders.api";
 import { formatDistanceToNow } from 'date-fns'
 import { ar } from 'date-fns/locale'
+import { Loader2 } from "lucide-react";
 
 
 interface Props {
@@ -51,9 +52,6 @@ const OrdersDialog: React.FC<Props> = ({
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [`session-${sessionId}-orders`],
     queryFn: ()=>fetchOrders(sessionId),
-    initialData:{
-      orders:[]
-    }
   });
   
   // close charging order
@@ -66,36 +64,25 @@ const OrdersDialog: React.FC<Props> = ({
     }
   });
 
+
+    // حذف الطلب
+    const {mutate:deleteOrderRequest,isPending:deleteIsPending} = useMutation({
+      mutationFn: (orderId: number) => deleteOrder(orderId),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [`session-${sessionId}-orders`] });
+      },
+      onError: () => {
+        alert("فشل في حذف الطلب");
+      },
+    });
+
   const [addOrderOpen, setAddOrderOpen] = useState(false);
   const [stoppingIndex, setStoppingIndex] = useState<number | null>(null)
   const [priceInput, setPriceInput] = useState<string>('')
 
-  // useEffect(() => {
-  //   setOrderPrices(orders || []);
-  // }, [orders]);
 
-  const handlePriceChange = (index: number, value: string) => {
-    const newOrders = [...data.orders];
-    const price = parseFloat(value);
-    if (!isNaN(price)) {
-      newOrders[index].price = price;
-      // setOrderPrices(newOrders);
-      // onUpdateSessionOrders(newOrders);
-    }
-  };
 
-  const handleAddOrder = (order: Order) => {
-    const newOrders = [...data.orders, order];
-    // setOrderPrices(newOrders);
-    // onUpdateSessionOrders(newOrders);
-  };
 
-  // حذف طلب بناءً على الإندكس
-  const handleDeleteOrder = (index: number) => {
-    const newOrders = data.orders.filter((_, i) => i !== index);
-    // setOrderPrices(newOrders);
-    // onUpdateSessionOrders(newOrders);
-  };
   const handleStopCharging = (index: number) => {
     setStoppingIndex(index)
     setPriceInput('') // إعادة تعيين حقل السعر
@@ -109,7 +96,49 @@ const OrdersDialog: React.FC<Props> = ({
     });
   }
 
-  const totalPrice = data.orders.reduce((acc, o) => acc + o.price, 0);
+  const totalPrice = data?.orders?.reduce((acc, o) => acc + o.price, 0) ?? 0;
+
+
+  // Loading UI
+        if (isLoading) {
+          return (
+            <Dialog open={open} onOpenChange={onClose}>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>طلبات الجلسة #{sessionId}</DialogTitle>
+                </DialogHeader>
+                    <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                      <p className="text-muted-foreground">جاري تحميل الطلبات...</p>
+                    </div>
+                <DialogFooter className="pt-4">
+                <Button variant="outline" onClick={onClose}>إغلاق</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          );
+        }
+      
+        // Error UI
+        if (isError) {
+          return (
+            <Dialog open={open} onOpenChange={onClose}>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>طلبات الجلسة #{sessionId}</DialogTitle>
+                </DialogHeader>
+                    <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+                      <p className="text-destructive text-lg font-semibold">حدث خطأ أثناء تحميل الجلسات</p>
+                      <p className="text-muted-foreground text-sm">{error.message}</p>
+                    </div>
+                <DialogFooter className="pt-4">
+                <Button variant="outline" onClick={onClose}>إغلاق</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          );
+        }
+
 
   return (
     <>
@@ -156,9 +185,12 @@ const OrdersDialog: React.FC<Props> = ({
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={() => handleDeleteOrder(order.id)}
-              >
-                حذف
+                onClick={() => {
+                    deleteOrderRequest(order.id)
+                }}
+                  disabled={deleteIsPending}
+                >
+                  {deleteIsPending ? "..." : "إلغاء"}
               </Button>
             </div>    
             

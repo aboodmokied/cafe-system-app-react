@@ -1,18 +1,12 @@
 // components/sessions/SessionCard.tsx
+import { closeSession } from "@/api/sessions.api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { toast } from "@/hooks/use-toast";
 import { Session } from "@/types";
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
 
-// interface Session {
-//   id: string;
-//   client: string;
-//   startTime: string;
-//   endTime: string | null;
-//   status: "open" | "closed";
-//   orders: number;
-//   totalDue: number;
-// }
 
 interface Props {
   session: Session;
@@ -27,6 +21,31 @@ const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString();
 
 const SessionCard: React.FC<Props> = ({ session, onViewOrders, onCloseSession }) => {
+  // close session
+  const {mutate,isPending} = useMutation({
+    mutationFn: (sessionId: number) => closeSession(sessionId),
+    onSuccess: () => {
+      toast({
+        title: "تم إغلاق الجلسة",
+        description: `تم إغلاق الجلسة رقم ${session.id} بنجاح.`,
+        variant: "default",
+      });
+      onCloseSession?.();
+    },
+    onError: (err:any) => {
+      const message =
+        err?.response?.data?.message?.[0] ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "حدث خطأ أثناء إغلاق الجلسة.";
+
+      toast({
+        title: "خطأ في إغلاق الجلسة",
+        description: message,
+        variant: "destructive",
+      });
+    },
+  });
   return (
     <Card className="p-4" dir="rtl">
       <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -58,14 +77,6 @@ const SessionCard: React.FC<Props> = ({ session, onViewOrders, onCloseSession })
               {session.endAt ? ` - ${formatTime(session.endAt)}` : ""}
             </p>
           </div>
-          {/* <div>
-            <p className="text-gray-500">الطلبات</p>
-            <p className="font-medium">{session.orders} طلب</p>
-          </div> */}
-          {/* <div>
-            <p className="text-gray-500">المبلغ</p>
-            <p className="font-medium">${session.totalDue}</p>
-          </div> */}
         </div>
 
         <div className="flex items-center gap-2">
@@ -73,7 +84,7 @@ const SessionCard: React.FC<Props> = ({ session, onViewOrders, onCloseSession })
             عرض الطلبات
           </Button>
           {session.isActive && (
-            <Button variant="default" size="sm" onClick={onCloseSession}>
+            <Button variant="default" disabled={isPending} size="sm" onClick={()=>mutate(session.id)}>
               إغلاق الجلسة
             </Button>
           )}

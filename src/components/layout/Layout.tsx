@@ -6,6 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
 import { setSessionExpiredHandler } from "@/api/authAxios";
 import SessionExpiredDialog from "../auth/SessionExpiredDialog";
+import { Toaster } from "../ui/toaster";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100" dir="rtl">
+      
       <Header />
       <div className="flex flex-1">
         {/* Mobile sidebar toggle button */}
@@ -67,6 +69,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </main>
       </div>
       <SessionExpiredDialog open={sessionExpired} onClose={handleDialogClose} />
+      <Toaster/>
     </div>
   );
 };

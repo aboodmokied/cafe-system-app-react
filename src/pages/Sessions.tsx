@@ -1,29 +1,20 @@
 // pages/sessions.tsx
-// export interface Session {
-//   id: string;
-//   username: string;
-//   clientType:"GUEST"|"SUBSCRIPER";
-//   startAt: string;
-//   endAt: string | null;
-//   isActive:boolean;
-
-//   // status: "open" | "closed";
-//   // orders: Order[];
-// }
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import SessionCard from "@/components/sessions/SessionCard";
 import NewSessionDialog from "@/components/sessions/NewSessionDialog";
 import OrdersDialog from "@/components/sessions/OrdersDialog";
-import { fetchSessions, openNewSession } from "@/api/sessions.api";
+import { closeSession, fetchSessions, openNewSession } from "@/api/sessions.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Session } from "@/types";
 import { Loader2 } from "lucide-react"; // For spinner icon
 import Pagination from "@/components/layout/Pagination";
+import SessionOrdersDialog from "@/components/sessions/SessionOrdersDialog";
 
 
 const SessionsPage = () => {
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState('open');
   const limit = 1;
@@ -33,7 +24,7 @@ const SessionsPage = () => {
     queryFn: ()=>fetchSessions(page,limit,status)
   });
 
-  
+      
 
   const [ordersDialogOpen, setOrdersDialogOpen] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
@@ -43,12 +34,8 @@ const SessionsPage = () => {
     setOrdersDialogOpen(true);
   };
 
-  // const addSession = (newSession: Pick<Session, "username" | "clientType">) => {
-  //   if (!newSession.clientType || !newSession.username) return;
-  //   mutation.mutate(newSession);
-  // };
 
-  const closeSession = (sessionId: number) => {
+  const handleCloseSession = (sessionId: number) => {
     // implementation coming soon
   };
 
@@ -58,7 +45,7 @@ const SessionsPage = () => {
     setStatus(newTab);
   }
 
-  const selectedSession = data?.sessions.find((s) => s.id === selectedSessionId);
+  const selectedSession = data?.sessions?.find((s) => s.id === selectedSessionId);
 
   // Loading UI
   if (isLoading) {
@@ -84,8 +71,6 @@ const SessionsPage = () => {
     );
   }
 
-  // const openSessions = data.sessions.filter((s) => s.isActive);
-  // const closedSessions = data.sessions.filter((s) => !s.isActive);
 
   return (
     <Layout>
@@ -102,36 +87,16 @@ const SessionsPage = () => {
             <TabsTrigger value="all">الكل</TabsTrigger>
           </TabsList>
 
-          {/* <TabsContent value="open" className="space-y-4">
-            {openSessions.map((session) => (
-              <SessionCard
-                key={session.id}
-                session={session}
-                onViewOrders={() => openOrders(session.id)}
-                onCloseSession={() => closeSession(session.id)}
-              />
-            ))}
-          </TabsContent>
-
-          <TabsContent value="closed" className="space-y-4">
-            {closedSessions.map((session) => (
-              <SessionCard
-                key={session.id}
-                session={session}
-                onViewOrders={() => openOrders(session.id)}
-              />
-            ))}
-          </TabsContent> */}
-
           <TabsContent value={status} className="space-y-4">
             {data.sessions.map((session) => (
               <SessionCard
                 key={session.id}
                 session={session}
                 onViewOrders={() => openOrders(session.id)}
-                onCloseSession={() =>
-                  session.isActive && closeSession(session.id)
+                onCloseSession={() =>{
+                  queryClient.invalidateQueries({ queryKey: ['sessions',page,status] });
                 }
+              }
               />
             ))}
           </TabsContent>
@@ -143,18 +108,23 @@ const SessionsPage = () => {
         setPage={setPage}
         pagination={data.pagination}
       />    
-      {selectedSession && (
+      {selectedSession && selectedSession.isActive &&(
         <OrdersDialog
           open={ordersDialogOpen}
-          // session={selectedSession}
           sessionId={selectedSession.id}
           onClose={() => setOrdersDialogOpen(false)}
-          // orders={selectedSession.orders}
-        //   onUpdateSessionOrders={(newOrders) =>
-        //     updateSessionOrders(selectedSession.id, newOrders)
-        //   }
         />
-      )}
+        )
+      }
+
+      {selectedSession && !selectedSession.isActive &&(
+        <SessionOrdersDialog
+          open={ordersDialogOpen}
+          sessionId={selectedSession.id}
+          onClose={() => setOrdersDialogOpen(false)}
+        />
+        )
+      }
     </Layout>
   );
 };

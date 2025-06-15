@@ -18,4 +18,10 @@ export const openNewSession = async (newSession:CreateGuestSessionPayload|Create
   return response.data
 }
 
+export const closeSession = async (sessionId:number) => {
+  const response = await authAxios.post('/session/close', {id:sessionId})
+  console.log(response.data);
+  return response.data
+}
+
 

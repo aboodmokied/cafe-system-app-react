@@ -14,6 +14,12 @@ export const addCardOrder = async (newOrder:AddCardOrderPayload) => {
   console.log(response.data);
   return response.data
 }
+
+export const deleteOrder = async (orderId:number) => {
+  const response = await authAxios.delete(`/order/${orderId}`)
+  console.log(response.data);
+  return response.data
+}
 export const addOtherOrder = async (newOrder:AddOtherOrderPayload) => {
   const response = await authAxios.post('/order', newOrder)
   console.log(response.data);

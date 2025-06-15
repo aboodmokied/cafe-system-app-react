@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOrders } from "@/api/orders.api";
 import { Order } from "@/types";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -15,10 +16,49 @@ const SessionOrdersDialog = ({ open, onClose, sessionId }: Props) => {
     const { data, isLoading, isError, error } = useQuery({
         queryKey: [`session-${sessionId}-orders`],
         queryFn: ()=>fetchOrders(sessionId),
-        initialData:{
-        orders:[]
-        }
     });
+
+    // Loading UI
+      if (isLoading) {
+        return (
+          <Dialog open={open} onOpenChange={onClose}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>طلبات الجلسة #{sessionId}</DialogTitle>
+              </DialogHeader>
+                  <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    <p className="text-muted-foreground">جاري تحميل الطلبات...</p>
+                  </div>
+              <DialogFooter className="pt-4">
+              <Button variant="outline" onClick={onClose}>إغلاق</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        );
+      }
+    
+      // Error UI
+      if (isError) {
+        return (
+          <Dialog open={open} onOpenChange={onClose}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>طلبات الجلسة #{sessionId}</DialogTitle>
+              </DialogHeader>
+                  <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+                    <p className="text-destructive text-lg font-semibold">حدث خطأ أثناء تحميل الجلسات</p>
+                    <p className="text-muted-foreground text-sm">{error.message}</p>
+                  </div>
+              <DialogFooter className="pt-4">
+              <Button variant="outline" onClick={onClose}>إغلاق</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        );
+      }
+
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
