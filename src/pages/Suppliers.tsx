@@ -11,6 +11,7 @@ import { addNewSupplier, fetchSuppliers } from "@/api/supplier.api";
 import { Supplier } from "@/types";
 import { Link } from "react-router-dom";
 import Pagination from "@/components/layout/Pagination";
+import SearchBar from "@/components/layout/SearchBar";
 
 const Suppliers = () => {
   const queryClient = useQueryClient();
@@ -20,10 +21,11 @@ const Suppliers = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const limit = 1;
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["suppliers",page],
-    queryFn: ()=>fetchSuppliers(page,limit),
+    queryKey: ["suppliers",page,searchQuery],
+    queryFn: ()=>fetchSuppliers(page,limit,searchQuery),
   });
 
   const mutation = useMutation({
@@ -87,6 +89,12 @@ const Suppliers = () => {
         <h1 className="text-2xl font-bold">شركات الإمداد</h1>
       </div>
 
+      <SearchBar
+        onSearch={(searchInput)=>{
+          setPage(1);
+          setSearchQuery(searchInput);
+        }}
+      />
       <ul className="space-y-2">
         {data.suppliers.map((supplier: Supplier) => (
           <li key={supplier.id} className="border p-3 rounded flex items-center justify-between">

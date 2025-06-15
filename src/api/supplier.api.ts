@@ -2,9 +2,9 @@ import { CreateSupplierPayload, FetchSuppliersResponse, SupplierReportResponse }
 import authAxios from "./authAxios";
 
 
-export const fetchSuppliers=async(page:number,limit:number)=>{
+export const fetchSuppliers=async(page:number,limit:number,q?:string)=>{
     const response=await authAxios.get<FetchSuppliersResponse>('/supplier',{
-      params: { page, limit }
+      params: { page, limit,q }
     });
     console.log(response.data);
     return response.data;

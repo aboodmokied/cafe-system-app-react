@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { addNewSalesPoint, fetchSalesPoints } from "@/api/point.api";
 import AddCardToPoinDialog from "@/components/sales-point/AddCardToPoinDialog";
 import Pagination from "@/components/layout/Pagination";
+import SearchBar from "@/components/layout/SearchBar";
 
 const SalesPoints = () => {
   const queryClient = useQueryClient();
@@ -23,10 +24,11 @@ const SalesPoints = () => {
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
   const limit = 1;
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["salesPoints",page],
-    queryFn: ()=>fetchSalesPoints(page,limit),
+    queryKey: ["salesPoints",page,searchQuery],
+    queryFn: ()=>fetchSalesPoints(page,limit,searchQuery),
   });
 
   const mutation = useMutation({
@@ -91,7 +93,14 @@ const SalesPoints = () => {
           
           <h1 className="text-2xl font-bold">نقاط البيع</h1>
         </div>
-        
+
+      <SearchBar
+        onSearch={(searchInput)=>{
+          setPage(1);
+          setSearchQuery(searchInput);
+        }}
+      />  
+
         <ul className="space-y-2">
           {data.salesPoints.map((point: SalesPoint) => (
             <li key={point.id} className="border p-3 rounded flex flex-col md:flex-row md:items-center md:justify-between gap-2">

@@ -5,11 +5,11 @@ import authAxios from "./authAxios";
 
 
 
-export const fetchSubscribers = async (page:number,limit:number) => {
-  const res=await authAxios.get<FetchSupscripersResponse>(`/subscriper`,{
-    params: { page, limit }
+export const fetchSubscribers = async (page: number, limit: number, q?: string) => {
+  const res = await authAxios.get<FetchSupscripersResponse>(`/subscriper`, {
+    params: { page, limit, q },
   });
-  console.log(res.data)
+  console.log(res.data);
   return res.data;
 };
 

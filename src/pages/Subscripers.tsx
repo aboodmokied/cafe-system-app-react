@@ -9,11 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchSubscribers } from "@/api/subscriper.api";
 import { Link } from "react-router-dom";
 import Pagination from "@/components/layout/Pagination";
+import SearchBar from "@/components/layout/SearchBar";
 
 type TabType = "all" | "weekly" | "monthly";
 
 const Subscripers = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const limit = 1;
   const {
@@ -21,16 +22,10 @@ const Subscripers = () => {
     isLoading,
     isError,
   } = useQuery({
-    queryFn: ()=>fetchSubscribers(page,limit),
-    queryKey: ["subscripers"],
+    queryFn: ()=>fetchSubscribers(page,limit,searchQuery),
+    queryKey: ["subscripers",page,searchQuery],
   });
 
-   const filteredSubscriptions =
-    activeTab === "all"
-      ? data?.subscripers || []
-      : data?.subscripers?.filter((sub) =>
-          activeTab === "monthly" ? sub.type === "monthly" : sub.type === "weekly"
-        ) || [];
 
   if (isLoading) {
     return (
@@ -65,36 +60,23 @@ const Subscripers = () => {
           <h1 className="text-2xl font-bold">الاشتراكات</h1>
         </div>
 
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-            className="pl-10 pr-4 py-2 border border-gray-200 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-right"
-            type="text"
-            placeholder="البحث عن المشتركين..."
-          />
-        </div>
+        <SearchBar
+          onSearch={(searchInput)=>{
+            setPage(1);
+            setSearchQuery(searchInput);
+          }}
+        />
 
-        <Tabs defaultValue="all" value={activeTab} onValueChange={(val) => setActiveTab(val as TabType)}>
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="all">الكل</TabsTrigger>
-            <TabsTrigger value="monthly">شهري</TabsTrigger>
-            <TabsTrigger value="weekly">أسبوعي</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value={activeTab} className="space-y-4">
-            { filteredSubscriptions.length === 0 ? (
+          <div className="space-y-4">
+            { data.subscripers.length === 0 ? (
               <p>لا توجد اشتراكات لعرضها</p>
             )
             : (
-              filteredSubscriptions.map((subscription) => (
-                <Card key={subscription.id} className="p-4 text-right">
+              data.subscripers.map((subscription) => (
+                <Card key={subscription.id} className="p-4 text-right" dir="rtl">
                   <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
-                    <div className="flex items-center">
-                      <Button variant="outline" size="sm">
-                        <Link to={`/subscripers/${subscription.id}/report`}>عرض التقرير</Link>
-                      </Button>
+                    <div>
+                      <h3 className="text-lg font-medium">{subscription.username}</h3>
                     </div>
 
                     <div className="flex flex-wrap gap-4 text-sm">
@@ -111,17 +93,18 @@ const Subscripers = () => {
                         <p className="font-medium">{subscription.type}</p>
                       </div>
                     </div>
-
-                    <div>
-                      <h3 className="text-lg font-medium">{subscription.username}</h3>
-                    </div>
+                      <div className="flex items-center">
+                        <Button variant="outline" size="sm">
+                          <Link to={`/subscripers/${subscription.id}/report`}>عرض التقرير</Link>
+                        </Button>
+                      </div>
+                    
                   </div>
                 </Card>
               ))
             )
               }
-          </TabsContent>
-        </Tabs>
+          </div>
       </div>
       {/* pagination controll */}
       <Pagination

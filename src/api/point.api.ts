@@ -2,9 +2,9 @@ import { CreateSalesPointPayload, CreateSupplierPayload, FetchSalesPointsRespons
 import authAxios from "./authAxios";
 
 
-export const fetchSalesPoints=async(page:number,limit:number)=>{
+export const fetchSalesPoints=async(page:number,limit:number,q?:string)=>{
     const response=await authAxios.get<FetchSalesPointsResponse>('/sales-point',{
-      params: { page, limit }
+      params: { page, limit, q }
     });
     console.log(response.data);
     return response.data;
