@@ -20,7 +20,7 @@ const PoinCollectionBillings = () => {
   const queryClient = useQueryClient();
   
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["point-collection-billings", page],
+    queryKey: [`point-collection-billings-${page}`, page],
     queryFn: () => fetchPointCollectionBillings(page, limit),
   });
 
@@ -146,7 +146,7 @@ const PoinCollectionBillings = () => {
         paymentBillingId={paymentBillingId}
         onSuccess={()=>{
           queryClient.invalidateQueries({
-            queryKey: ["point-collection-billings", page]
+            queryKey: [`point-collection-billings-${page}`]
           });
         }}
       />

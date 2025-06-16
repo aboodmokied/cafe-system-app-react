@@ -9,6 +9,7 @@ import { fetchRevenueReport } from "@/api/revenues.api";
 import { FetchRevenuesPayload, Revenue } from "@/types";
 import { formatForDateTimeLocal } from "@/utils/formatForDateTimeLocal";
 import Pagination from "@/components/layout/Pagination";
+// import TransactionDetailsDialog from "@/components/TransactionDetailsDialog";
 
 
 const Revenues = () => {
@@ -17,6 +18,7 @@ const Revenues = () => {
   const [endDate, setEndDate] = useState("");
   const [page, setPage] = useState(1);
   const limit = 20;
+  // const [selectedRevenue, setSelectedRevenue] = useState<Revenue | null>(null);
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["revenues", { startDate, endDate },page],
     queryFn: () => {
@@ -147,19 +149,25 @@ const Revenues = () => {
                 return (
                 <Card key={rev.id} className="p-4 text-right">
                   <div className="flex flex-col md:flex-row justify-end gap-4 md:items-center">
+                    {/* <div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedRevenue(rev)}
+                      >
+                        عرض تفاصيل المستخدم
+                      </Button>
+                    </div> */}
                     <div className="text-sm text-gray-500">
                       <p>تاريخ الإيراد: <span className="font-medium">{format(new Date(rev.date), "yyyy-MM-dd HH:mm")}</span></p>
                       <p>المصدر: <span className="font-medium">{
-                        rev.type=='SUBSCRIPER'
-                        ? 'من مشترك' 
-                        : rev.type=='GUEST'
-                        ? 'من زائر'
-                        : 'من نقطة بيع'
+                        rev.type === 'SUBSCRIPER' ? 'من مشترك' : rev.type === 'GUEST' ? 'من زائر' : 'من نقطة بيع'
                       }</span></p>
                       <p>الإجمالي: <span className="font-medium text-green-600">{rev.amount} ش</span></p>
                     </div>
                   </div>
                 </Card>
+
                 )
               }
 
@@ -172,6 +180,10 @@ const Revenues = () => {
         setPage={setPage}
         pagination={data.pagination}
       />
+      {/* <TransactionDetailsDialog
+        transaction={selectedRevenue}
+        onClose={() => setSelectedRevenue(null)}
+      /> */}
     </Layout>
   );
 };

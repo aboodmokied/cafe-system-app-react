@@ -23,7 +23,7 @@ const SubscriperReport = () => {
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 20;
   if (!id) return <div className="text-red-500">لا يوجد معرف مشترك.</div>;
 
   const { data, isLoading, isError, error } = useQuery({
@@ -74,11 +74,11 @@ const SubscriperReport = () => {
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold">الفواتير</h2>
-          {data.subscriper.billings.length === 0 ? (
+          {data?.subscriper?.billings?.length === 0 ? (
             <div className="text-gray-400 text-center">لا توجد فواتير.</div>
           ) : (
             <Accordion type="multiple" className="space-y-4">
-              {data.subscriper.billings.map((billing: Billing) => (
+              {data?.subscriper?.billings?.map((billing: Billing) => (
                 <AccordionItem key={billing.id} value={`billing-${billing.id}`} className="border rounded-lg">
                   {!billing.isPaid && new Date(billing.endDate) < new Date() && (
                     <div className="bg-red-100 text-red-700 font-bold text-sm px-4 py-2 rounded-t-lg text-left">

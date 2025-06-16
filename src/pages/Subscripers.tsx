@@ -16,7 +16,7 @@ type TabType = "all" | "weekly" | "monthly";
 const Subscripers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 20;
   const {
     data,
     isLoading,

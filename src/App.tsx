@@ -39,7 +39,7 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
 
             {/* صفحات تتطلب تسجيل دخول */}
-            <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
+            <Route path="/" element={<RequireAuth><Sessions /></RequireAuth>} />
             <Route path="/card-inventory" element={<RequireAuth><CardInventory /></RequireAuth>} />
             <Route path="/subscripers" element={<RequireAuth><Subscripers /></RequireAuth>} />
             <Route

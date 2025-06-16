@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { Session } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 
 interface Props {
@@ -21,6 +22,7 @@ const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString();
 
 const SessionCard: React.FC<Props> = ({ session, onViewOrders, onCloseSession }) => {
+  const navigate=useNavigate();
   // close session
   const {mutate,isPending} = useMutation({
     mutationFn: (sessionId: number) => closeSession(sessionId),
@@ -48,49 +50,73 @@ const SessionCard: React.FC<Props> = ({ session, onViewOrders, onCloseSession })
   });
   return (
     <Card className="p-4" dir="rtl">
-      <div className="flex flex-col md:flex-row justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-medium">{session.id}</h3>
-            <span
-              className={`${
-                session.isActive
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-700"
-              } text-xs px-2 py-1 rounded-full`}
-            >
-              {session.isActive ? "مفتوحة" : "مغلقة"}
-            </span>
-          </div>
-          <p className="text-sm text-gray-500 mt-1">{session.username}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div>
-            <p className="text-gray-500">التاريخ</p>
-            <p className="font-medium">{formatDate(session.startAt)}</p>
-          </div>
-          <div>
-            <p className="text-gray-500">الوقت</p>
-            <p className="font-medium">
-              {formatTime(session.startAt)}
-              {session.endAt ? ` - ${formatTime(session.endAt)}` : ""}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onViewOrders}>
-            عرض الطلبات
-          </Button>
-          {session.isActive && (
-            <Button variant="default" disabled={isPending} size="sm" onClick={()=>mutate(session.id)}>
-              إغلاق الجلسة
-            </Button>
-          )}
-        </div>
+  <div className="flex flex-col md:flex-row justify-between gap-4">
+    <div>
+      <div className="flex items-center gap-2">
+        <h3 className="text-lg font-medium">{session.id}</h3>
+        <span
+          className={`${
+            session.isActive
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-700"
+          } text-xs px-2 py-1 rounded-full`}
+        >
+          {session.isActive ? "مفتوحة" : "مغلقة"}
+        </span>
       </div>
+      <p className="text-sm text-gray-500 mt-1">{session.username}</p>
+      
+      <p className="text-sm mt-1">
+        نوع العميل:{" "}
+        <span className="font-medium">
+          {session.clientType === "SUBSCRIPER" ? "مشترك" : "زائر"}
+        </span>
+      </p>
+
+      {session.clientType === "SUBSCRIPER" && (
+        <Button
+          variant="link"
+          size="sm"
+          className="mt-1 p-0 text-blue-600 hover:underline"
+          onClick={() => navigate(`/subscripers/${session.subscriperId}/report`)}
+        >
+          عرض تقرير المشترك
+        </Button>
+      )}
+    </div>
+
+    <div className="flex flex-wrap gap-4 text-sm">
+      <div>
+        <p className="text-gray-500">التاريخ</p>
+        <p className="font-medium">{formatDate(session.startAt)}</p>
+      </div>
+      <div>
+        <p className="text-gray-500">الوقت</p>
+        <p className="font-medium">
+          {formatTime(session.startAt)}
+          {session.endAt ? ` - ${formatTime(session.endAt)}` : ""}
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <Button variant="outline" size="sm" onClick={onViewOrders}>
+        عرض الطلبات
+      </Button>
+      {session.isActive && (
+        <Button
+          variant="default"
+          disabled={isPending}
+          size="sm"
+          onClick={() => mutate(session.id)}
+        >
+          إغلاق الجلسة
+        </Button>
+      )}
+    </div>
+  </div>
     </Card>
+
   );
 };
 

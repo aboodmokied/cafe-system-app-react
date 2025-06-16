@@ -20,7 +20,7 @@ const Suppliers = () => {
   const [phone, setPhone] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 20;
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, isError } = useQuery({

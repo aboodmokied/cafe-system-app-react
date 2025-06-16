@@ -23,7 +23,7 @@ const SalesPoints = () => {
   const [selectedPointId, setSelectedPointId] = useState<number | null>(null);
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 20;
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, isError } = useQuery({

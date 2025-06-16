@@ -3,6 +3,7 @@ export interface Session {
   username: string;
   clientType:string;
   startAt: string;
+  subscriperId:number;
   endAt: string | null;
   isActive:boolean;
 }

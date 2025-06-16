@@ -18,7 +18,7 @@ const SupplierReport = () => {
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 20;
 
   if (!id) return <div className="text-red-500">لا يوجد معرف مورد.</div>;
 

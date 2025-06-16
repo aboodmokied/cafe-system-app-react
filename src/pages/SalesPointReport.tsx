@@ -15,7 +15,7 @@ const SalesPointReport = () => {
   const [paymentBillingId, setPaymentBillingId] = useState<number | null>(null);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 20;
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
 

@@ -17,7 +17,7 @@ const SessionsPage = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState('open');
-  const limit = 1;
+  const limit = 20;
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['sessions',page,status],
@@ -35,9 +35,6 @@ const SessionsPage = () => {
   };
 
 
-  const handleCloseSession = (sessionId: number) => {
-    // implementation coming soon
-  };
 
 
   const onTabChange=(newTab:string)=>{

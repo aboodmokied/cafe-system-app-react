@@ -19,7 +19,7 @@ const CollectionBillings = () => {
   const queryClient = useQueryClient();
   
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["collection-billings", page],
+    queryKey: [`collection-billings-${page}`, page],
     queryFn: () => fetchCollectionBillings(page, limit),
   });
 
@@ -139,7 +139,7 @@ const CollectionBillings = () => {
         paymentBillingId={paymentBillingId}
         onSuccess={()=>{
           queryClient.invalidateQueries({
-            queryKey: ["collection-billings", page]
+            queryKey: [`collection-billings-${page}`]
           });
         }}
       />
