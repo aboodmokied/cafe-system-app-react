@@ -11,6 +11,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const apiUrl=import.meta.env.VITE_API_URL;
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User>(null);
@@ -29,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string): Promise<LoginResponse> => {
   try {
     const response = await axios.post<LoginResponse>(
-      "http://localhost:3000/auth/login",
+      `${apiUrl}/auth/login`,
       { email, password },
       {
         headers: {
@@ -53,7 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     await axios.get(
-      "http://localhost:3000/auth/logout",
+      `${apiUrl}/auth/logout`,
       {
         headers: {
           "Content-Type": "application/json",
