@@ -19,7 +19,7 @@ import { useAuth } from "@/auth/AuthContext";
 
 const navItems = [
   // { title: "الرئيسية", icon: <Home size={20} />, path: "/" },
-  { title: "الجلسات", icon: <Clock size={20} />, path: "/sessions" },
+  { title: "الجلسات", icon: <Clock size={20} />, path: "/" },
   { title: "مخزون البطاقات", icon: <CreditCard size={20} />, path: "/card-inventory" },
   { title: "الاشتراكات", icon: <Users size={20} />, path: "/subscripers" },
   { title: "نقاط البيع", icon: <Plus size={20} />, path: "/sales-points" },

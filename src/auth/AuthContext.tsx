@@ -11,7 +11,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const apiUrl=import.meta.env.VITE_API_URL;
+const apiUrl=import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

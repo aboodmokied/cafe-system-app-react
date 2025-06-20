@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import CardInventory from "./pages/CardInventory";
 import Sessions from "./pages/Sessions";
@@ -32,7 +32,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      {/* <BrowserRouter> */}
+      <HashRouter>
         <AuthProvider>
           <Routes>
             {/* صفحة تسجيل الدخول */}
@@ -50,7 +51,7 @@ const App = () => (
                 </RequireAuth>
               }
             />
-            <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
+            {/* <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} /> */}
             <Route path="/collection-billings" element={<RequireAuth><CollectionBillings /></RequireAuth>} />
             <Route path="/poin-collection-billings" element={<RequireAuth><PoinCollectionBillings /></RequireAuth>} />
             <Route path="/supplier-collection-billings" element={<RequireAuth><SupplierCollectionBillings /></RequireAuth>} />
@@ -82,7 +83,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
-      </BrowserRouter>
+        </HashRouter>
+      {/* </BrowserRouter> */}
     </TooltipProvider>
   </QueryClientProvider>
 );

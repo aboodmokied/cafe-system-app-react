@@ -7,6 +7,7 @@ import { Menu } from "lucide-react";
 import { setSessionExpiredHandler } from "@/api/authAxios";
 import SessionExpiredDialog from "../auth/SessionExpiredDialog";
 import { Toaster } from "../ui/toaster";
+import { useNavigate } from "react-router-dom";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
   const [showSidebar, setShowSidebar] = useState(false);
-
+  const navigate=useNavigate();
   const [sessionExpired, setSessionExpired] = useState(false);
 
   useEffect(() => {
@@ -26,7 +27,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleDialogClose = () => {
     setSessionExpired(false);
-    window.location.href = "/login";
+    // window.location.href = "/login";
+    navigate('/login',{replace:true})
   };
 
   const toggleSidebar = () => {
